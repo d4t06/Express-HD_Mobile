@@ -1,0 +1,38 @@
+###
+GET http://localhost:3000/categories
+
+
+###
+POST    http://localhost:3000/categories
+content-Type: application/json
+
+{
+    "category":"mobile",
+    "category_ascii":"mobile",
+    "attribute_order":"",
+    "hidden": false
+}
+
+
+###
+DELETE     http://localhost:3000/categories/3
+
+
+###
+POST     http://localhost:3000/api/products
+content-Type: application/json
+
+{"product_ascii":"iphone-14","image_url":"","product":"ipHone 14","brand_id":2,"category_id":12}
+
+
+###
+POST     http://localhost:3000/api/product-colors
+content-Type: application/json
+
+{"product_ascii":"iphone-5","color":"Gray","color_ascii":"gray"}
+
+###
+POST     http://localhost:3000/api/product-variants
+content-Type: application/json
+
+{"product_ascii":"iphone-5","variant":"32GB","variant_ascii":"32gb"}
