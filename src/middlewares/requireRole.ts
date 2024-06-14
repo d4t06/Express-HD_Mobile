@@ -32,8 +32,8 @@ export default function requireRole(requireRole: "ADMIN" | "") {
          return myResponse(
             res,
             false,
-            "Insufficient privilege or the access token provided is expired, revoked",
-            403
+            "The access token provided is expired, revoked, malformed or invalid for other reasons",
+            401
          );
       }
    };

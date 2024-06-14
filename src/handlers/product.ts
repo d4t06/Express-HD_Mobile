@@ -22,70 +22,111 @@ import { generateId } from "../system/helper";
 
 const PAGE_SIZE = 1;
 
-interface Query  {
+interface Query {
    page: number;
    category_id: number;
-   brand_id: number[];
-};
+   brand_id: string[];
+   price: string[];
+   page_size: string;
+}
 
 class priceRangeHandler {
    async findAll(req: Request<{}, {}, {}, Query>, res: Response, next: NextFunction) {
       try {
          const query = req.query;
-         const { page = 1, brand_id, category_id } = query;
+         const { page = 1, brand_id, category_id, price, page_size } = query;
          const sort = res.locals.sort as Sort;
 
          const where: Filterable<InferAttributes<Product, { omit: never }>>["where"] = {};
+         const combineWhere: Filterable<
+            InferAttributes<Combine, { omit: never }>
+         >["where"] = {};
          const order: FindOptions<InferAttributes<Product, { omit: never }>>["order"] =
             [];
 
          if (category_id) where.category_id = category_id;
+
          if (brand_id)
             where.brand_id = {
                [Op.in]: brand_id,
             };
+
+         console.log("checkl sort", sort);
+
+         if (price) {
+            const [gThan, lThan] = price;
+            if (!Number.isNaN(+gThan) && !Number.isNaN(+lThan)) {
+               combineWhere.price = {
+                  [Op.and]: {
+                     [Op.gt]: +gThan * 1000000,
+                     [Op.lt]: +lThan * 1000000,
+                  },
+               };
+            }
+         }
          if (sort.enable) {
+            // if (sort.column === "price") {
+            // order.push([
+            //    { model: DefaultProductVariant, as: "default_variant" },
+            //    {
+            //       model: Variant,
+            //       as: "variant",
+            //    },
+            //    {
+            //       model: DefaultVariantCombine,
+            //       as: "default_combine",
+            //    },
+            //    {
+            //       model: Combine,
+            //       as: "combine",
+            //    },
+            //    sort.column,
+            //    sort.type,
+            // ]);
+
+            // }
+
             if (sort.column === "price") {
                order.push([
-                  { model: DefaultProductVariant, as: "default_variant" },
-                  {
-                     model: Variant,
-                     as: "variant",
-                  },
-                  {
-                     model: DefaultVariantCombine,
-                     as: "default_combine",
-                  },
-                  {
-                     model: Combine,
-                     as: "combine",
-                  },
+                  "default_variant",
+                  "variant",
+                  "default_combine",
+                  "combine",
                   sort.column,
                   sort.type,
                ]);
             }
          }
 
+         // query is string not number
+         const pageSize = page_size && +page_size < 10 ? +page_size : PAGE_SIZE;
+
          const { count, rows } = await Product.findAndCountAll({
-            offset: (+page - 1) * PAGE_SIZE,
-            limit: PAGE_SIZE,
+            offset: (+page - 1) * pageSize,
+            limit: pageSize,
             distinct: true,
             include: [
                {
+                  required: true,
                   model: DefaultProductVariant,
                   as: "default_variant",
                   include: [
                      {
+                        required: true,
                         model: Variant,
                         as: "variant",
                         include: [
                            {
+                              required: true,
                               model: DefaultVariantCombine,
                               as: "default_combine",
                               include: [
                                  {
+                                    required: true,
                                     model: Combine,
                                     as: "combine",
+                                    // order,
+                                    where: combineWhere,
                                  },
                               ],
                            },
@@ -110,16 +151,14 @@ class priceRangeHandler {
                   ],
                },
             ],
-            order,
+            // order,
             where,
          });
-
-         console.log("check sort", sort);
 
          return myResponse(res, true, "get all product successful", 200, {
             products: rows,
             count,
-            pageSize: PAGE_SIZE,
+            pageSize,
             sort: sort.enable,
             category_id: +category_id || null,
             brand_id: brand_id?.length ? brand_id : null,
@@ -241,6 +280,8 @@ class priceRangeHandler {
          // if (value.error) throw new BadRequest(value.error.message);
          await item.update(body);
 
+         await Product.update(body, { where: { product_ascii: productAscii } });
+
          return myResponse(res, true, "update product successful", 200);
       } catch (error) {
          next(error);
@@ -248,14 +289,41 @@ class priceRangeHandler {
    }
 
    async search(
-      req: Request<{}, {}, {}, { q: string }>,
+      req: Request<{}, {}, {}, { q: string; page: number }>,
       res: Response,
       next: NextFunction
    ) {
-      const { q } = req.query;
+      const { q, page = 1 } = req.query;
 
-      const products = await Product.findAll({
-         limit: 20,
+      const sort = res.locals.sort as Sort;
+      const order = [];
+
+      if (sort.enable) {
+         if (sort.column === "price") {
+            order.push([
+               { model: DefaultProductVariant, as: "default_variant" },
+               {
+                  model: Variant,
+                  as: "variant",
+               },
+               {
+                  model: DefaultVariantCombine,
+                  as: "default_combine",
+               },
+               {
+                  model: Combine,
+                  as: "combine",
+               },
+               sort.column,
+               sort.type,
+            ]);
+         }
+      }
+
+      const { count, rows } = await Product.findAndCountAll({
+         offset: (+page - 1) * PAGE_SIZE,
+         limit: PAGE_SIZE,
+         distinct: true,
          include: [
             {
                model: DefaultProductVariant,
@@ -279,13 +347,36 @@ class priceRangeHandler {
                   },
                ],
             },
+            {
+               model: Variant,
+               as: "variants",
+               include: [
+                  {
+                     model: DefaultVariantCombine,
+                     as: "default_combine",
+                     include: [
+                        {
+                           model: Combine,
+                           as: "combine",
+                        },
+                     ],
+                  },
+               ],
+            },
          ],
          where: {
             product_ascii: { [Op.like]: `${generateId(q)}%` },
          },
       });
 
-      return myResponse(res, true, "search successful", 200, products);
+      return myResponse(res, true, "search product successful", 200, {
+         products: rows,
+         count,
+         pageSize: PAGE_SIZE,
+         sort: sort.enable,
+         column: sort.enable ? sort.column : null,
+         type: sort.enable ? sort.type : null,
+      });
    }
 
    async delete(

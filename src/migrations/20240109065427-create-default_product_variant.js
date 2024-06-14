@@ -20,7 +20,7 @@ module.exports = {
             },
          },
          variant_id: {
-            onDelete: "CASCADE",
+            onDelete: "SET NULL",
             type: Sequelize.INTEGER,
             allowNull: true,
             defaultValue: null,

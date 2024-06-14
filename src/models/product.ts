@@ -15,7 +15,7 @@ import Combine from "./combine";
 import Description from "./description";
 import DefaultProductVariant from "./defaultProductVariant";
 import ProductSlider from "./productSlider";
-import Category from "./category";
+import CartItem from "./cartItem";
 
 class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Product>> {
    declare product_ascii: string;
@@ -91,6 +91,11 @@ Product.hasOne(DefaultProductVariant, {
 
 ProductSlider.belongsTo(Product, {
    foreignKey: "product_ascii",
+});
+
+CartItem.belongsTo(Product, {
+   foreignKey: "product_ascii",
+   as: "product",
 });
 
 export default Product;

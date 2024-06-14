@@ -9,8 +9,7 @@ module.exports = {
             type: Sequelize.INTEGER,
          },
          combine_id: {
-            onDelete: "CASCADE",
-            allowNull: false,
+            onDelete: "SET NULL",
             type: Sequelize.INTEGER,
             unique: true,
             references: {

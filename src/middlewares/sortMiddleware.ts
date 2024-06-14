@@ -9,14 +9,14 @@ export default function sortMiddleware(
    res.locals.sort = {
       column: "",
       enable: false,
-      type: "asc",
+      type: "ASC",
    } as Sort;
 
    // eliminate
-   const { column, type = "asc" } = req.query;
+   const { column, type = "ASC" } = req.query;
 
    if (column) {
-      const isValidType = ["asc", "desc"].includes(type);
+      const isValidType = ["ASC", "DESC"].includes(type);
       const isValidColumn = ["price", "installment"].includes(column);
 
       Object.assign(res.locals.sort, {

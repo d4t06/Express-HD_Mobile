@@ -17,11 +17,14 @@ import defaultProductVariantRouter from "./defaultProductVariant";
 import authRouter from "./auth";
 import imageRouter from "./image";
 import initRouter from "./init";
+import cartRouter from "./cartItem";
 
 export default function routeHandler(app: Express) {
    app.use("/api/init", initRouter);
 
    app.use("/api/auth", authRouter);
+
+   app.use("/api/cart-items", cartRouter);
 
    app.use("/api/images", imageRouter);
 

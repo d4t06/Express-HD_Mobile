@@ -54,8 +54,4 @@ Color.hasOne(ProductSlider, {
    as: "product_slider",
 });
 
-// ProductSlider.belongsTo(Color, {
-//    foreignKey: "color_id",
-// });
-
 export default Color;

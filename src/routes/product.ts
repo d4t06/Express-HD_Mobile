@@ -5,7 +5,7 @@ import requireRole from "../middlewares/requireRole";
 
 const productRouter = Router();
 
-productRouter.get("/search", productHandler.search);
+productRouter.get("/search", sortMiddleware, productHandler.search);
 productRouter.get("/:productAscii", productHandler.findOne);
 
 // productRouter.use();

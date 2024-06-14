@@ -1,6 +1,6 @@
 export type Sort = {
    enable: boolean,
-   type: 'desc' | 'asc',
+   type: 'DESC' | 'ASC',
    column: 'price' | ''
 }
 
