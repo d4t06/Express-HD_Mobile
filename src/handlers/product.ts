@@ -27,15 +27,19 @@ interface Query {
    category_id: number;
    brand_id: string[];
    price: string[];
-   page_size: string;
+   size: string;
 }
 
 class priceRangeHandler {
    async findAll(req: Request<{}, {}, {}, Query>, res: Response, next: NextFunction) {
       try {
          const query = req.query;
-         const { page = 1, brand_id, category_id, price, page_size } = query;
+         const { page, brand_id, category_id, price, size } = query;
          const sort = res.locals.sort as Sort;
+
+         const _size =
+            (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+         const _page = (page && typeof page === "string" && +page) || 1;
 
          const where: Filterable<InferAttributes<Product, { omit: never }>>["where"] = {};
          const combineWhere: Filterable<
@@ -50,8 +54,6 @@ class priceRangeHandler {
             where.brand_id = {
                [Op.in]: brand_id,
             };
-
-         console.log("checkl sort", sort);
 
          if (price) {
             const [gThan, lThan] = price;
@@ -98,12 +100,9 @@ class priceRangeHandler {
             }
          }
 
-         // query is string not number
-         const pageSize = page_size && +page_size < 10 ? +page_size : PAGE_SIZE;
-
          const { count, rows } = await Product.findAndCountAll({
-            offset: (+page - 1) * pageSize,
-            limit: pageSize,
+            offset: (_page - 1) * _size,
+            limit: _size,
             distinct: true,
             include: [
                {
@@ -158,7 +157,8 @@ class priceRangeHandler {
          return myResponse(res, true, "get all product successful", 200, {
             products: rows,
             count,
-            pageSize,
+            page: _page,
+            page_size: _size,
             sort: sort.enable,
             category_id: +category_id || null,
             brand_id: brand_id?.length ? brand_id : null,
@@ -289,11 +289,15 @@ class priceRangeHandler {
    }
 
    async search(
-      req: Request<{}, {}, {}, { q: string; page: number }>,
+      req: Request<{}, {}, {}, { q: string; page: string; size: string }>,
       res: Response,
       next: NextFunction
    ) {
-      const { q, page = 1 } = req.query;
+      const { q, page, size } = req.query;
+
+      const _size =
+         (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+      const _page = (page && typeof page === "string" && +page) || 1;
 
       const sort = res.locals.sort as Sort;
       const order = [];
@@ -321,8 +325,8 @@ class priceRangeHandler {
       }
 
       const { count, rows } = await Product.findAndCountAll({
-         offset: (+page - 1) * PAGE_SIZE,
-         limit: PAGE_SIZE,
+         offset: (_page - 1) * _size,
+         limit: _size,
          distinct: true,
          include: [
             {
@@ -372,7 +376,8 @@ class priceRangeHandler {
       return myResponse(res, true, "search product successful", 200, {
          products: rows,
          count,
-         pageSize: PAGE_SIZE,
+         page_size: _size,
+         page: _page,
          sort: sort.enable,
          column: sort.enable ? sort.column : null,
          type: sort.enable ? sort.type : null,

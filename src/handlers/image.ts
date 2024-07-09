@@ -7,7 +7,7 @@ import Image from "../models/image";
 import cloudinary from "cloudinary";
 import { generateId } from "../system/helper";
 
-const PAGE_SIZE = 18;
+const PAGE_SIZE = 6;
 
 cloudinary.v2.config({
    cloud_name: process.env.CLOUD_NAME,
@@ -15,23 +15,26 @@ cloudinary.v2.config({
    api_secret: process.env.CLOUD_API_SECRET,
 });
 
-console.log('check process', process.env.CLOUD_NAME);
-
-
 class priceRangeHandler {
    async findAll(req: Request, res: Response, next: NextFunction) {
       try {
-         const { page = 1 } = req.query;
+         const { page, size } = req.query;
+
+         const _size =
+            (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+         const _page = (page && typeof page === "string" && +page) || 1;
 
          const { rows, count } = await Image.findAndCountAll({
-            offset: (+page - 1) * PAGE_SIZE,
-            limit: PAGE_SIZE,
+            offset: (+_page - 1) * _size,
+            limit: _size,
             order: [["createdAt", "DESC"]],
          });
 
          return myResponse(res, true, "add image successful", 200, {
             images: rows,
             count,
+            page: _page,
+            page_size: _size,
          });
       } catch (error) {
          next(error);
