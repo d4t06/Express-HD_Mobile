@@ -15,7 +15,7 @@ app.use(cookiesParser());
 app.use(
    cors({
       credentials: true,
-      origin: ["http://localhost:5173", "https://d4t06.github.io"],
+      origin: ["http://localhost:5173", "http://localhost:4200", "https://d4t06.github.io"],
    })
 );
 

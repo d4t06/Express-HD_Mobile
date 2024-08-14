@@ -20,7 +20,7 @@ import { Filterable, FindOptions, InferAttributes, Op } from "sequelize";
 import { Sort } from "../types/type";
 import { generateId } from "../system/helper";
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 6;
 
 interface Query {
    page: number;
@@ -158,7 +158,7 @@ class priceRangeHandler {
             products: rows,
             count,
             page: _page,
-            page_size: _size,
+            size: _size,
             sort: sort.enable,
             category_id: +category_id || null,
             brand_id: brand_id?.length ? brand_id : null,

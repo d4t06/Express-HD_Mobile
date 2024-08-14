@@ -106,7 +106,14 @@ class AuthHandler {
       }
    }
 
-   async logout(req: Request<{}, {}, UserSchema>, res: Response, next: NextFunction) {}
+   async logout(req: Request<{}, {}, UserSchema>, res: Response, next: NextFunction) {
+      const cookies = req.cookies;
+      if (!cookies.jwt) throw new BadRequest("cookie not provided");
+
+      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      return res.sendStatus(204);
+
+   }
 
    async refreshToken(req: Request, res: Response, next: NextFunction) {
       try {
