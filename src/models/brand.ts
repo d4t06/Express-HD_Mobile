@@ -12,8 +12,8 @@ import sequelize from "../config/sequelize";
 class Brand extends Model<InferAttributes<Brand>, InferCreationAttributes<Brand>> {
    declare id: CreationOptional<number>;
    declare category_id: ForeignKey<number>;
-   declare brand: string;
-   declare brand_ascii: string;
+   declare name: string;
+   declare name_ascii: string;
    declare image_url: string;
 }
 
@@ -24,10 +24,10 @@ Brand.init(
          primaryKey: true,
          autoIncrement: true,
       },
-      brand: {
+      name: {
          type: DataTypes.STRING,
       },
-      brand_ascii: {
+      name_ascii: {
          type: DataTypes.STRING,
       },
       image_url: {

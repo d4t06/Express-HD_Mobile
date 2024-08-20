@@ -15,7 +15,7 @@ class DefaultProductVariant extends Model<
 > {
    declare id: CreationOptional<number>;
    declare variant_id: CreationOptional<number>;
-   declare product_ascii: ForeignKey<string>;
+   declare product_id: ForeignKey<number>;
 }
 
 DefaultProductVariant.init(
@@ -25,10 +25,10 @@ DefaultProductVariant.init(
          primaryKey: true,
          autoIncrement: true,
       },
-      product_ascii: {
+      product_id: {
          allowNull: false,
          unique: true,
-         type: DataTypes.STRING,
+         type: DataTypes.NUMBER,
       },
       variant_id: {
          defaultValue: null,

@@ -18,6 +18,7 @@ import authRouter from "./auth";
 import imageRouter from "./image";
 import initRouter from "./init";
 import cartRouter from "./cartItem";
+import productManagementRouter from "./productManagement";
 
 export default function routeHandler(app: Express) {
    app.use("/api/init", initRouter);
@@ -39,6 +40,8 @@ export default function routeHandler(app: Express) {
    app.use("/api/slider-images", sliderImageRouter);
 
    app.use("/api/products", productRouter);
+
+   app.use("/api/product-management", productManagementRouter);
 
    app.use("/api/product-variants", variantRouter);
 

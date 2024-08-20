@@ -64,7 +64,7 @@ class categoryHandler {
 
          // create slider
          const slider = await Slider.create({
-            name: `slider for ${category.category_ascii}`,
+            name: `slider for ${category.name}`,
          });
 
          await CategorySlider.create({

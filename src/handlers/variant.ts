@@ -23,7 +23,7 @@ class variantHandler {
 
          const colors = await Color.findAll({
             where: {
-               product_ascii: newVariant.product_ascii,
+               product_id: newVariant.product_id,
             },
          });
 
@@ -34,7 +34,7 @@ class variantHandler {
                color_id: c.id,
                price: 0,
                quantity: 0,
-               product_ascii: newVariant.product_ascii,
+               product_id: newVariant.product_id,
                variant_id: newVariant.id,
             }).save();
 

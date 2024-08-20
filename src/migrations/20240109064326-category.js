@@ -10,11 +10,11 @@ module.exports = {
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-         category_ascii: {
+         name_ascii: {
             type: Sequelize.STRING,
             allowNull: false,
          },
-         category: {
+         name: {
             allowNull: false,
             type: Sequelize.STRING,
          },

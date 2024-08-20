@@ -15,19 +15,24 @@ class ProductAttribute extends Model<
 > {
    declare id: CreationOptional<number>;
    declare category_attribute_id: ForeignKey<number>;
+   declare product_id: number;
    declare value: string;
 }
 
 ProductAttribute.init(
    {
       id: {
-         type: DataTypes.INTEGER,
+         type: DataTypes.NUMBER,
          primaryKey: true,
          autoIncrement: true,
       },
       category_attribute_id: {
          allowNull: false,
-         type: DataTypes.INTEGER,
+         type: DataTypes.NUMBER,
+      },
+      product_id: {
+         allowNull: false,
+         type: DataTypes.NUMBER,
       },
       value: {
          allowNull: false,

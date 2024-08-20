@@ -15,9 +15,9 @@ import DefaultProductVariant from "./defaultProductVariant";
 
 class Variant extends Model<InferAttributes<Variant>, InferCreationAttributes<Variant>> {
    declare id: CreationOptional<number>;
-   declare product_ascii: ForeignKey<string>;
-   declare variant: string;
-   declare variant_ascii: string;
+   declare product_id: ForeignKey<number>;
+   declare name: string;
+   declare name_ascii: string;
    declare default_combine: NonAttribute<DefaultVariantCombine>;
 }
 
@@ -28,15 +28,15 @@ Variant.init(
          primaryKey: true,
          autoIncrement: true,
       },
-      product_ascii: {
+      product_id: {
+         allowNull: false,
+         type: DataTypes.NUMBER,
+      },
+      name: {
          allowNull: false,
          type: DataTypes.STRING,
       },
-      variant: {
-         allowNull: false,
-         type: DataTypes.STRING,
-      },
-      variant_ascii: {
+      name_ascii: {
          allowNull: false,
          type: DataTypes.STRING,
       },

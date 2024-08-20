@@ -22,18 +22,18 @@ class colorHandler {
 
          // add slider
          const newSlider = await new Slider({
-            name: `for ${color.product_ascii} ${color.color_ascii}`,
+            name: `for ${color.product_id} ${color.name_ascii}`,
          }).save();
 
          await new ProductSlider({
             color_id: color.id,
-            product_ascii: color.product_ascii,
+            product_id: color.product_id,
             slider_id: newSlider.id,
          }).save();
 
          const variants = await Variant.findAll({
             where: {
-               product_ascii: color.product_ascii,
+               product_id: color.product_id,
             },
          });
 
@@ -44,7 +44,7 @@ class colorHandler {
                color_id: color.id,
                price: 0,
                quantity: 0,
-               product_ascii: color.product_ascii,
+               product_id: color.product_id,
                variant_id: v.id,
             }).save();
 

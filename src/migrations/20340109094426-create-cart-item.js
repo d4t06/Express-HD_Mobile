@@ -8,13 +8,13 @@ module.exports = {
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-         product_ascii: {
+         product_id: {
             onDelete: "CASCADE",
-            type: Sequelize.STRING,
+            type: Sequelize.INTEGER,
             allowNull: false,
             references: {
                model: "Products",
-               key: "product_ascii",
+               key: "id",
             },
          },
          color_id: {

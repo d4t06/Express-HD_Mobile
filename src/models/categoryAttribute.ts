@@ -16,8 +16,8 @@ class CategoryAttribute extends Model<
 > {
    declare id: CreationOptional<number>;
    declare category_id: ForeignKey<number>;
-   declare attribute: string;
-   declare attribute_ascii: number;
+   declare name: string;
+   declare name_ascii: number;
 }
 
 CategoryAttribute.init(
@@ -32,11 +32,11 @@ CategoryAttribute.init(
          allowNull: false,
          type: DataTypes.INTEGER,
       },
-      attribute: {
+      name: {
          allowNull: false,
          type: DataTypes.STRING,
       },
-      attribute_ascii: {
+      name_ascii: {
          allowNull: false,
          type: DataTypes.STRING,
       },

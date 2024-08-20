@@ -17,12 +17,12 @@ module.exports = {
                key: "id",
             },
          },
-         brand_ascii: {
+         name_ascii: {
             type: Sequelize.STRING,
             unique: true,
             allowNull: false,
          },
-         brand: {
+         name: {
             allowNull: false,
             type: Sequelize.STRING,
          },

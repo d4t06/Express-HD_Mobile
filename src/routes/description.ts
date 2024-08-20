@@ -6,6 +6,6 @@ const descriptionRouter = Router();
 
 descriptionRouter.use(requireRole('ADMIN'))
 
-descriptionRouter.put("/:productAscii", descHandler.update);
+descriptionRouter.put("/:productId", descHandler.update);
 
 export default descriptionRouter;

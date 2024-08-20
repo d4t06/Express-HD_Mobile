@@ -17,7 +17,7 @@ class ProductSlider extends Model<
 > {
    declare id: CreationOptional<number>;
    declare slider_id: number;
-   declare product_ascii: ForeignKey<string>;
+   declare product_id: ForeignKey<Number>;
    declare color_id: ForeignKey<number>;
    declare slider: NonAttribute<Slider>;
 }
@@ -33,8 +33,8 @@ ProductSlider.init(
          type: DataTypes.INTEGER,
          allowNull: false,
       },
-      product_ascii: {
-         type: DataTypes.STRING,
+      product_id: {
+         type: DataTypes.NUMBER,
          allowNull: false,
       },
       slider_id: {
@@ -48,8 +48,5 @@ ProductSlider.init(
       tableName: "Product_Sliders",
    }
 );
-
-
-
 
 export default ProductSlider;

@@ -8,18 +8,18 @@ import {
 } from "sequelize";
 
 import sequelize from "../config/sequelize";
-import DefaultVariantCombine from "./defaultVariantCombine";
 
-class Combine extends Model<InferAttributes<Combine>, InferCreationAttributes<Combine>> {
+class Rating extends Model<InferAttributes<Rating>, InferCreationAttributes<Rating>> {
    declare id: CreationOptional<number>;
    declare product_id: ForeignKey<number>;
-   declare color_id: ForeignKey<number>;
-   declare variant_id: ForeignKey<number>;
-   declare price: number;
-   declare quantity: number;
+   declare username_name: string;
+   declare content: string;
+   declare rating: number;
+   declare approve: number;
+   declare date_convert: string;
 }
 
-Combine.init(
+Rating.init(
    {
       id: {
          type: DataTypes.INTEGER,
@@ -28,35 +28,32 @@ Combine.init(
       },
       product_id: {
          allowNull: false,
-         type: DataTypes.NUMBER,
+         type: DataTypes.INTEGER,
       },
-      color_id: {
+      username_name: {
+         allowNull: false,
+         type: DataTypes.STRING,
+      },
+      content: {
+         allowNull: false,
+         type: DataTypes.STRING,
+      },
+      approve: {
          allowNull: false,
          type: DataTypes.INTEGER,
       },
-      variant_id: {
-         allowNull: false,
-         type: DataTypes.INTEGER,
+      date_convert: {
+         type: DataTypes.STRING,
       },
-      price: {
-         allowNull: false,
-         type: DataTypes.INTEGER,
-      },
-      quantity: {
-         allowNull: false,
+      rating: {
          type: DataTypes.INTEGER,
       },
    },
    {
       sequelize,
       timestamps: false,
-      tableName: "Product_Combines",
+      tableName: "Product_Ratings",
    }
 );
 
-DefaultVariantCombine.belongsTo(Combine, {
-   foreignKey: "combine_id",
-   as: "combine",
-});
-
-export default Combine;
+export default Rating;

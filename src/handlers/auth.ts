@@ -4,7 +4,7 @@ import userSchema from "../schemas/user";
 import BadRequest from "../errors/BadRequest";
 import User from "../models/user";
 import myResponse from "../system/myResponse";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ObjectNotFound from "../errors/ObjectNotFound";
 
@@ -29,7 +29,8 @@ class AuthHandler {
          if (!user)
             return myResponse(res, false, "username or password is not correct", 401);
 
-         const isCorrectPassword = await bcrypt.compare(body.password, user.password);
+         // const isCorrectPassword = await bcrypt.compare(body.password, user.password);
+         const isCorrectPassword = (body.password === user.password);
 
          if (!isCorrectPassword)
             return myResponse(res, false, "username or password is not correct", 401);
@@ -39,7 +40,7 @@ class AuthHandler {
                username: user.username,
                role: user.role,
             },
-           process.env.JWT_SECRET!,
+            process.env.JWT_SECRET!,
             {
                expiresIn: "1d",
             }
@@ -50,7 +51,7 @@ class AuthHandler {
                username: user.username,
                role: user.role,
             },
-           process.env.JWT_SECRET!,
+            process.env.JWT_SECRET!,
             {
                expiresIn: "3d",
             }
@@ -91,12 +92,12 @@ class AuthHandler {
 
          if (user) return myResponse(res, false, "username already exist", 409);
 
-         const salt = await bcrypt.genSalt(10);
-         const hashPassword = await bcrypt.hash(body.password, salt);
+         // const salt = await bcrypt.genSalt(10);
+         // const hashPassword = await bcrypt.hash(body.password, salt);
 
          await User.create({
             username: body.username,
-            password: hashPassword,
+            password: body.password,
             role: "USER",
          });
 
@@ -112,7 +113,6 @@ class AuthHandler {
 
       res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
       return res.sendStatus(204);
-
    }
 
    async refreshToken(req: Request, res: Response, next: NextFunction) {

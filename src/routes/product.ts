@@ -6,7 +6,7 @@ import requireRole from "../middlewares/requireRole";
 const productRouter = Router();
 
 productRouter.get("/search", sortMiddleware, productHandler.search);
-productRouter.get("/:productAscii", productHandler.findOne);
+productRouter.get("/:productId", productHandler.findOne);
 
 // productRouter.use();
 productRouter.get("/", sortMiddleware, productHandler.findAll);
@@ -14,7 +14,7 @@ productRouter.get("/", sortMiddleware, productHandler.findAll);
 productRouter.use(requireRole("ADMIN"));
 
 productRouter.post("/", productHandler.add);
-productRouter.put("/:productAscii", productHandler.update);
-productRouter.delete("/:productAscii", productHandler.delete);
+productRouter.put("/:productId", productHandler.update);
+productRouter.delete("/:productId", productHandler.delete);
 
 export default productRouter;

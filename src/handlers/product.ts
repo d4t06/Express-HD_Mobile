@@ -30,7 +30,7 @@ interface Query {
    size: string;
 }
 
-class priceRangeHandler {
+class ProductHandler {
    async findAll(req: Request<{}, {}, {}, Query>, res: Response, next: NextFunction) {
       try {
          const query = req.query;
@@ -170,15 +170,11 @@ class priceRangeHandler {
       }
    }
 
-   async findOne(
-      req: Request<{ productAscii: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async findOne(req: Request<{ productId: string }>, res: Response, next: NextFunction) {
       try {
-         const { productAscii } = req.params;
+         const { productId } = req.params;
 
-         const product = await Product.findByPk(productAscii, {
+         const product = await Product.findByPk(productId, {
             include: [
                {
                   model: Category,
@@ -250,12 +246,12 @@ class priceRangeHandler {
          const newProduct = await Product.create(body);
 
          await new Description({
-            content: newProduct.product,
-            product_ascii: newProduct.product_ascii,
+            content: newProduct.name,
+            product_id: newProduct.id,
          }).save();
 
          await new DefaultProductVariant({
-            product_ascii: newProduct.product_ascii,
+            product_id: newProduct.id,
          }).save();
 
          return myResponse(res, true, "add product successful", 200, newProduct);
@@ -264,23 +260,19 @@ class priceRangeHandler {
       }
    }
 
-   async update(
-      req: Request<{ productAscii: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async update(req: Request<{ productId: string }>, res: Response, next: NextFunction) {
       try {
-         const { productAscii } = req.params;
+         const { productId } = req.params;
          const body = req.body;
          // const value = productSchema.validate(body);
 
-         const item = await Product.findByPk(productAscii);
+         const item = await Product.findByPk(productId);
          if (!item) throw new ObjectNotFound("");
 
          // if (value.error) throw new BadRequest(value.error.message);
          await item.update(body);
 
-         await Product.update(body, { where: { product_ascii: productAscii } });
+         await Product.update(body, { where: { id: +productId } });
 
          return myResponse(res, true, "update product successful", 200);
       } catch (error) {
@@ -369,7 +361,7 @@ class priceRangeHandler {
             },
          ],
          where: {
-            product_ascii: { [Op.like]: `${generateId(q)}%` },
+            name_ascii: { [Op.like]: `${generateId(q)}%` },
          },
       });
 
@@ -384,15 +376,11 @@ class priceRangeHandler {
       });
    }
 
-   async delete(
-      req: Request<{ productAscii: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async delete(req: Request<{ productId: string }>, res: Response, next: NextFunction) {
       try {
-         const { productAscii } = req.params;
+         const { productId } = req.params;
 
-         const item = await Product.findByPk(productAscii);
+         const item = await Product.findByPk(productId);
          if (!item) throw new ObjectNotFound("");
 
          item.destroy();
@@ -405,4 +393,4 @@ class priceRangeHandler {
    }
 }
 
-export default new priceRangeHandler();
+export default new ProductHandler();

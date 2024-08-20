@@ -20,13 +20,13 @@ module.exports = {
                   key: "id",
                },
             },
-            product_ascii: {
+            product_id: {
                onDelete: "CASCADE",
                onUpdate: "CASCADE",
-               type: Sequelize.STRING,
+               type: Sequelize.INTEGER,
                references: {
                   model: "Products",
-                  key: "product_ascii",
+                  key: "id",
                },
             },
             value: {
@@ -37,7 +37,7 @@ module.exports = {
          {
             uniqueKeys: {
                Product_Attributes_unique: {
-                  fields: ["category_attribute_id", "product_ascii"],
+                  fields: ["category_attribute_id", "product_id"],
                },
             },
          }

@@ -2,7 +2,7 @@ import Joi from "joi";
 
 const descriptionSchema = Joi.object({
    id: Joi.number(),
-   product_ascii: Joi.string().required(),
+   product_id: Joi.number().required(),
    content: Joi.string().required(),
 });
 

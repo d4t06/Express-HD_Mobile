@@ -22,8 +22,8 @@ class Category extends Model<
    InferCreationAttributes<Category>
 > {
    declare id: CreationOptional<number>;
-   declare category: string;
-   declare category_ascii: string;
+   declare name: string;
+   declare name_ascii: string;
    declare hidden: boolean;
    declare attribute_order: string;
    declare brands: NonAttribute<Brand[]>;
@@ -39,10 +39,10 @@ Category.init(
          primaryKey: true,
          autoIncrement: true,
       },
-      category: {
+      name: {
          type: DataTypes.STRING,
       },
-      category_ascii: {
+      name_ascii: {
          type: DataTypes.STRING,
       },
       attribute_order: {

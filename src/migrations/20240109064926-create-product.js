@@ -3,12 +3,18 @@
 module.exports = {
    async up(queryInterface, Sequelize) {
       await queryInterface.createTable("Products", {
-         product_ascii: {
+         id: {
+            autoIncrement: true,
             primaryKey: true,
+            type: Sequelize.INTEGER,
+         },
+         name: {
+            allowNull: true,
             type: Sequelize.STRING,
          },
-         product: {
+         name_ascii: {
             allowNull: true,
+            unique: true,
             type: Sequelize.STRING,
          },
          brand_id: {

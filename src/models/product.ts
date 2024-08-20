@@ -1,4 +1,5 @@
 import {
+   CreationOptional,
    DataTypes,
    ForeignKey,
    InferAttributes,
@@ -16,10 +17,12 @@ import Description from "./description";
 import DefaultProductVariant from "./defaultProductVariant";
 import ProductSlider from "./productSlider";
 import CartItem from "./cartItem";
+import Rating from "./rating";
 
 class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Product>> {
-   declare product_ascii: string;
-   declare product: string;
+   declare id: CreationOptional<number>;
+   declare name: string;
+   declare name_ascii: string;
    declare image_url: string;
    declare category_id: ForeignKey<number>;
    declare brand_id: ForeignKey<number>;
@@ -32,11 +35,17 @@ class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Pr
 
 Product.init(
    {
-      product_ascii: {
-         type: DataTypes.STRING,
+      id: {
+         type: DataTypes.INTEGER,
          primaryKey: true,
+         autoIncrement: true,
       },
-      product: {
+      name: {
+         allowNull: false,
+         type: DataTypes.STRING,
+      },
+      name_ascii: {
+         unique: true,
          allowNull: false,
          type: DataTypes.STRING,
       },
@@ -60,41 +69,46 @@ Product.init(
 );
 
 Product.hasMany(Color, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "colors",
 });
 
 Product.hasMany(Variant, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "variants",
 });
 
 Product.hasMany(ProductAttribute, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "attributes",
 });
 
 Product.hasMany(Combine, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "combines",
 });
 
 Product.hasOne(Description, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "description",
 });
 
 Product.hasOne(DefaultProductVariant, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "default_variant",
 });
 
+Product.hasOne(Rating, {
+   foreignKey: "product_id",
+   as: "ratings",
+});
+
 ProductSlider.belongsTo(Product, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
 });
 
 CartItem.belongsTo(Product, {
-   foreignKey: "product_ascii",
+   foreignKey: "product_id",
    as: "product",
 });
 

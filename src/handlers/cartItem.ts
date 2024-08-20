@@ -69,7 +69,7 @@ class cartItemHandler {
          const foundedCartItem = await CartItem.findOne({
             where: {
                username: body.username,
-               product_ascii: body.product_ascii,
+               product_id: body.product_id,
                variant_id: body.variant_id,
                color_id: body.color_id,
             },

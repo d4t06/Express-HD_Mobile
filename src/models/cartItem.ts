@@ -15,7 +15,7 @@ class CartItem extends Model<
 > {
    declare id: CreationOptional<number>;
    declare username: string;
-   declare product_ascii: string;
+   declare product_id: number;
    declare color_id: number;
    declare variant_id: number;
    declare amount: number;
@@ -32,8 +32,8 @@ CartItem.init(
          type: DataTypes.INTEGER,
          allowNull: false,
       },
-      product_ascii: {
-         type: DataTypes.STRING,
+      product_id: {
+         type: DataTypes.NOW,
          allowNull: false,
       },
       color_id: {

@@ -8,15 +8,14 @@ module.exports = {
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-         product_ascii: {
-            type: Sequelize.STRING,
+         product_id: {
+            type: Sequelize.INTEGER,
             unique: true,
             allowNull: false,
             onDelete: "CASCADE",
-            onUpdate: "CASCADE",
             references: {
                model: "Products",
-               key: "product_ascii",
+               key: "id",
             },
          },
          content: {

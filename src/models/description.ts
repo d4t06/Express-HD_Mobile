@@ -14,7 +14,7 @@ class Description extends Model<
    InferCreationAttributes<Description>
 > {
    declare id: CreationOptional<number>;
-   declare product_ascii: ForeignKey<string>;
+   declare product_id: ForeignKey<number>;
    declare content: string;
 }
 
@@ -25,9 +25,9 @@ Description.init(
          primaryKey: true,
          autoIncrement: true,
       },
-      product_ascii: {
+      product_id: {
          allowNull: false,
-         type: DataTypes.STRING,
+         type: DataTypes.NUMBER,
       },
       content: {
          type: DataTypes.TEXT,

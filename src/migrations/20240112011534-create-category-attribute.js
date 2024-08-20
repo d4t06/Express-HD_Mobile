@@ -20,11 +20,11 @@ module.exports = {
                   key: "id",
                },
             },
-            attribute: {
+            name: {
                type: Sequelize.STRING,
                allowNull: false,
             },
-            attribute_ascii: {
+            name_ascii: {
                type: Sequelize.STRING,
                allowNull: false,
             },
@@ -32,7 +32,7 @@ module.exports = {
          {
             uniqueKeys: {
                check_unique: {
-                  fields: ["category_id", "attribute_ascii"],
+                  fields: ["category_id", "name_ascii"],
                },
             },
          }

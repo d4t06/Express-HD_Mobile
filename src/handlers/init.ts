@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 import User from "../models/user";
 import BadRequest from "../errors/BadRequest";
 import Category from "../models/category";
@@ -17,17 +17,17 @@ class InitController {
 
          if (result.error) throw new BadRequest(result.error.message);
 
-         const salt = await bcrypt.genSalt(10);
-         const hashPassword = await bcrypt.hash(user.password, salt);
+         // const salt = await bcrypt.genSalt(10);
+         // const hashPassword = await bcrypt.hash(user.password, salt);
          await User.create({
-            password: hashPassword,
+            password: user.password,
             username: user.username,
             role: "ADMIN",
          });
 
          const newCategory = await Category.create({
-            category: "Home",
-            category_ascii: "home",
+            name: "Home",
+            name_ascii: "home",
             hidden: true,
             attribute_order: "",
          });

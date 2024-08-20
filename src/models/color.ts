@@ -13,9 +13,9 @@ import ProductSlider from "./productSlider";
 
 class Color extends Model<InferAttributes<Color>, InferCreationAttributes<Color>> {
    declare id: CreationOptional<number>;
-   declare product_ascii: ForeignKey<string>;
-   declare color: string;
-   declare color_ascii: string;
+   declare product_id: ForeignKey<number>;
+   declare name: string;
+   declare name_ascii: string;
 }
 
 Color.init(
@@ -25,15 +25,15 @@ Color.init(
          primaryKey: true,
          autoIncrement: true,
       },
-      product_ascii: {
+      product_id: {
+         allowNull: false,
+         type: DataTypes.NUMBER,
+      },
+      name: {
          allowNull: false,
          type: DataTypes.STRING,
       },
-      color: {
-         allowNull: false,
-         type: DataTypes.STRING,
-      },
-      color_ascii: {
+      name_ascii: {
          allowNull: false,
          type: DataTypes.STRING,
       },

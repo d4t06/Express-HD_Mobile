@@ -10,21 +10,20 @@ module.exports = {
                primaryKey: true,
                type: Sequelize.INTEGER,
             },
-            product_ascii: {
-               type: Sequelize.STRING,
+            product_id: {
                allowNull: false,
+               type: Sequelize.INTEGER,
                onDelete: "CASCADE",
-               onUpdate: "CASCADE",
                references: {
                   model: "Products",
-                  key: "product_ascii",
+                  key: "id",
                },
             },
-            variant_ascii: {
-               type: Sequelize.STRING,
+            name_ascii: {
                allowNull: false,
+               type: Sequelize.STRING,
             },
-            variant: {
+            name: {
                allowNull: false,
                type: Sequelize.STRING,
             },
@@ -32,7 +31,7 @@ module.exports = {
          {
             uniqueKeys: {
                check_unique: {
-                  fields: ["product_ascii", "variant_ascii"],
+                  fields: ["product_id", "name_ascii"],
                },
             },
          }
