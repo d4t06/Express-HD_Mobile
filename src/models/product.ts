@@ -17,7 +17,7 @@ import Description from "./description";
 import DefaultProductVariant from "./defaultProductVariant";
 import ProductSlider from "./productSlider";
 import CartItem from "./cartItem";
-import Rating from "./rating";
+import Rating from "./productRating";
 
 class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Product>> {
    declare id: CreationOptional<number>;

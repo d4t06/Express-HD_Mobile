@@ -9,7 +9,6 @@ const PAGE_SIZE = 6;
 interface Query {
    page: number;
    category_id: number;
-   brand_id: string[];
    price: string[];
    size: string;
 }
@@ -18,7 +17,7 @@ class ProductManagement {
    async findAll(req: Request<{}, {}, {}, Query>, res: Response, next: NextFunction) {
       try {
          const query = req.query;
-         const { page, brand_id, category_id, price, size } = query;
+         const { page, category_id, size } = query;
          const sort = res.locals.sort as Sort;
 
          const _size =
@@ -28,12 +27,6 @@ class ProductManagement {
          const where: Filterable<InferAttributes<Product, { omit: never }>>["where"] = {};
 
          if (category_id) where.category_id = category_id;
-
-         if (brand_id) {
-            where.brand_id = {
-               [Op.in]: brand_id,
-            };
-         }
 
          const { count, rows } = await Product.findAndCountAll({
             offset: (_page - 1) * _size,
@@ -49,7 +42,6 @@ class ProductManagement {
             size: _size,
             sort: sort.enable,
             category_id: +category_id || null,
-            brand_id: brand_id?.length ? brand_id : null,
             column: sort.enable ? sort.column : null,
             type: sort.enable ? sort.type : null,
          });

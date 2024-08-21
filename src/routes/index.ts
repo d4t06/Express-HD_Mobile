@@ -19,6 +19,8 @@ import imageRouter from "./image";
 import initRouter from "./init";
 import cartRouter from "./cartItem";
 import productManagementRouter from "./productManagement";
+import ratingRouter from "./rating";
+import ratingManagementRouter from "./ratingManagement";
 
 export default function routeHandler(app: Express) {
    app.use("/api/init", initRouter);
@@ -57,7 +59,9 @@ export default function routeHandler(app: Express) {
 
    app.use("/api/default-product-variants", defaultProductVariantRouter);
 
-   // app.use("/comments", commentRouter);
+   app.use("/api/product-ratings", ratingRouter);
+
+   app.use("/api/product-rating-management", ratingManagementRouter);
 
    // app.use("/reviews", reviewRouter);
 

@@ -12,11 +12,13 @@ import sequelize from "../config/sequelize";
 class Rating extends Model<InferAttributes<Rating>, InferCreationAttributes<Rating>> {
    declare id: CreationOptional<number>;
    declare product_id: ForeignKey<number>;
-   declare username_name: string;
+   declare username: string;
    declare content: string;
-   declare rating: number;
+   declare rate: number;
    declare approve: number;
    declare date_convert: string;
+   declare total_like: number;
+   declare createdAt: CreationOptional<Date>;
 }
 
 Rating.init(
@@ -30,7 +32,7 @@ Rating.init(
          allowNull: false,
          type: DataTypes.INTEGER,
       },
-      username_name: {
+      username: {
          allowNull: false,
          type: DataTypes.STRING,
       },
@@ -39,19 +41,26 @@ Rating.init(
          type: DataTypes.STRING,
       },
       approve: {
-         allowNull: false,
+         defaultValue: 0,
          type: DataTypes.INTEGER,
       },
       date_convert: {
          type: DataTypes.STRING,
       },
-      rating: {
+      rate: {
+         allowNull: false,
          type: DataTypes.INTEGER,
       },
+      total_like: {
+         defaultValue: 0,
+         type: DataTypes.INTEGER,
+      },
+      createdAt: DataTypes.DATE,
    },
    {
       sequelize,
-      timestamps: false,
+      timestamps: true,
+      updatedAt: false,
       tableName: "Product_Ratings",
    }
 );

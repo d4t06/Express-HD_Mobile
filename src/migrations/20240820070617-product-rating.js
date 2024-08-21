@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
    async up(queryInterface, Sequelize) {
-      await queryInterface.createTable("Ratings", {
+      await queryInterface.createTable("Product_Ratings", {
          id: {
             allowNull: false,
             autoIncrement: true,
@@ -35,12 +35,10 @@ module.exports = {
          },
          approve: {
             type: Sequelize.INTEGER,
-            // when fetch, replace this field with convert_date string
             validate: {
                isIn: [[0, 1]],
             },
             defaultValue: 0,
-            allowNull: false,
          },
          date_convert: {
             type: Sequelize.STRING,
@@ -48,6 +46,11 @@ module.exports = {
          total_like: {
             type: Sequelize.INTEGER,
             defaultValue: 0,
+         },
+         createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.NOW,
          },
       });
    },
