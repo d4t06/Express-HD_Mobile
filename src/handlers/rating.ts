@@ -26,14 +26,15 @@ class RatingHandler {
    }
 
    async getProductRating(
-      req: Request<{}, {}, {}, { page: number; productId: number }>,
+      req: Request<{}, {}, {}, { page: string; productId: string; size: string }>,
       res: Response,
       next: NextFunction
    ) {
       try {
-         const { page, productId } = req.query;
+         const { page, productId, size } = req.query;
 
          const _page = (page && typeof page === "string" && +page) || 1;
+         const _size = (size && typeof size === "string" && +size < 12 && +size) || 1;
 
          const _productId = productId && typeof productId === "string" && +productId;
 
@@ -42,23 +43,21 @@ class RatingHandler {
                product_id: productId,
                ratings: [],
                page: _page,
-               page_size: PAGE_SIZE,
+               size: _size,
                count: 0,
             });
          }
 
          const { rows, count } = await Rating.findAndCountAll({
-            offset: (_page - 1) * PAGE_SIZE,
-            limit: PAGE_SIZE,
-            where: { product_id: _productId },
+            offset: (_page - 1) * _size,
+            limit: _size,
+            where: { product_id: _productId, approve: 1 },
+            order: [["id", "DESC"]],
          });
 
          if (rows.length) {
             rows.forEach((item) => {
-               item["date_convert"] = convertDate(
-                  item["createdAt"].toLocaleString(),
-                  false
-               );
+               item["date_convert"] = convertDate(item["createdAt"].toString(), false);
             });
          }
 
@@ -66,7 +65,7 @@ class RatingHandler {
             product_id: _productId,
             ratings: rows,
             page: _page,
-            page_size: PAGE_SIZE,
+            size: _size,
             count,
          };
 
@@ -76,19 +75,26 @@ class RatingHandler {
       }
    }
 
-   async getAverage(req: Request<{ productId: string }>, res: Response) {
+   async getAverage(
+      req: Request<{}, {}, {}, { product_id: string }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
-         const { productId } = req.params;
+         const { product_id } = req.query;
+
+         const _productId = product_id && typeof product_id === "string" && +product_id;
+
+         if (!_productId) throw new BadRequest("");
 
          const average = await Rating.findOne({
             attributes: [[Sequelize.fn("AVG", sequelize.col("rate")), "average"]],
-            where: { product_id: productId, approve: 1 },
+            where: { product_id: _productId, approve: 1 },
          });
 
          return myResponse(res, true, "Get rating average successful", 200, average);
       } catch (error) {
-         console.log(error);
-         res.status(500).json({ message: error });
+         next(error);
       }
    }
 }

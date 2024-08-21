@@ -46,7 +46,7 @@ class ProductHandler {
             InferAttributes<Combine, { omit: never }>
          >["where"] = {};
          const order: FindOptions<InferAttributes<Product, { omit: never }>>["order"] =
-            [];
+            [["id", "DESC"]];
 
          if (category_id) where.category_id = category_id;
 
@@ -150,7 +150,7 @@ class ProductHandler {
                   ],
                },
             ],
-            // order,
+            order,
             where,
          });
 
@@ -243,6 +243,7 @@ class ProductHandler {
          const value = productSchema.validate(body);
 
          if (value.error) throw new BadRequest(value.error.message);
+
          const newProduct = await Product.create(body);
 
          await new Description({

@@ -21,14 +21,12 @@ class RatingManagementHandler {
          const { rows, count } = await Rating.findAndCountAll({
             offset: (_page - 1) * _size,
             limit: _size,
+            order: [["id", "DESC"]],
          });
 
          if (rows.length) {
             rows.forEach((item) => {
-               item["date_convert"] = convertDate(
-                  item["createdAt"].toLocaleString(),
-                  false
-               );
+               item["date_convert"] = convertDate(item["createdAt"].toString(), false);
             });
          }
 
