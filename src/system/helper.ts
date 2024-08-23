@@ -14,20 +14,22 @@ export const generateId = (name: string) => {
    return convertToEn(name).replace(/[\W_]/g, "-");
 };
 
-export const convertDate = (dateString: string, raw: boolean) => {
-   const mysqlDate = new Date(dateString);
-   const currentDate = new Date();
-
-   const daysDiff = (currentDate.getDate() - mysqlDate.getDate()) / (1000 * 60 * 60 * 24);
-   // if rather than a month
-   if (daysDiff > 30 || raw) return mysqlDate.toLocaleDateString("en-gb");
-
-   // if less than a month
-   if (daysDiff < 1) {
-      const timeDiff = Math.floor(daysDiff * 24);
-      if (timeDiff === 0) return `Less than a hour`;
-      return `${timeDiff} hours ago`;
-   }
-
-   return `${Math.floor(daysDiff)} days ago`;
-};
+export const countDateDiff = (createAt: Date) => {
+   const current = new Date();
+ 
+   const hourDiff = +(
+     (current.getTime() - createAt.getTime()) /
+     (1000 * 60 * 60)
+   ).toFixed(1);
+ 
+   console.log(hourDiff);
+ 
+   if (hourDiff / 24 > 30) return createAt.toLocaleDateString('en-gb');
+ 
+   if (hourDiff / 24 > 1) return `${Math.floor(hourDiff / 24)} days ago`;
+ 
+   if (hourDiff > 1) return `${Math.floor(hourDiff)} hours ago`;
+ 
+   return `Less than a hour`;
+ };
+ 
