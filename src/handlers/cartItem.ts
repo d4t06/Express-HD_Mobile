@@ -14,7 +14,11 @@ type ResponseCartItem = {
 };
 
 class cartItemHandler {
-   async findAll(req: Request<{ username: string }>, res: Response, next: NextFunction) {
+   async findAll(
+      req: Request<{ username: string }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { username } = req.params;
 
@@ -27,7 +31,10 @@ class cartItemHandler {
                {
                   model: Product,
                   as: "product",
-                  include: [Product.associations.variants, Product.associations.colors],
+                  include: [
+                     Product.associations.variants,
+                     Product.associations.colors,
+                  ],
                },
             ],
          });
@@ -47,14 +54,20 @@ class cartItemHandler {
             }
          }
 
-         return myResponse(res, true, "get all cart item successful", 200, data);
+         return myResponse(
+            res,
+            true,
+            "get all cart item successful",
+            200,
+            data
+         );
       } catch (error) {
          next(error);
       }
    }
 
    async add(
-      req: Request<{}, {}, CartItem, { tokenUsername: string }>,
+      req: Request<{}, {}, CartItem, {}>,
       res: Response,
       next: NextFunction
    ) {
@@ -64,7 +77,8 @@ class cartItemHandler {
 
          if (value.error) throw new BadRequest(value.error.message);
 
-         if (body.username !== res.locals.tokenUsername) throw new AccessDenied("");
+         if (body.username !== res.locals.user.username)
+            throw new AccessDenied("");
 
          const foundedCartItem = await CartItem.findOne({
             where: {
@@ -112,13 +126,23 @@ class cartItemHandler {
             },
          });
 
-         return myResponse(res, true, "update cart item successful", 200, combine.price);
+         return myResponse(
+            res,
+            true,
+            "update cart item successful",
+            200,
+            combine.price
+         );
       } catch (error) {
          next(error);
       }
    }
 
-   async delete(req: Request<{ id: number }>, res: Response, next: NextFunction) {
+   async delete(
+      req: Request<{ id: number }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
 
