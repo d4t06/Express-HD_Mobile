@@ -53,13 +53,26 @@ class categoryHandler {
       }
    }
 
-   async add(req: Request<{}, {}, Category>, res: Response, next: NextFunction) {
+   async add(
+      req: Request<{}, {}, Category>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const body = req.body;
          const value = categorySchema.validate(body);
 
          if (value.error) throw new BadRequest(value.error.message);
-         // create category
+
+         const founded = await Category.findOne({
+            where: {
+               name_ascii: body.name_ascii,
+            },
+         });
+
+         if (founded)
+            return myResponse(res, false, "Category already exist", 409);
+
          const category = await Category.create(body);
 
          // create slider
@@ -96,7 +109,13 @@ class categoryHandler {
             ],
          });
 
-         return myResponse(res, true, "add category successful", 200, newCategory);
+         return myResponse(
+            res,
+            true,
+            "add category successful",
+            200,
+            newCategory
+         );
       } catch (error) {
          console.log(error);
          next(error);
@@ -115,6 +134,15 @@ class categoryHandler {
          const value = categorySchema.validate(body);
          if (value.error) throw new BadRequest(value.error.message);
 
+         const founded = await Brand.findOne({
+            where: {
+               name_ascii: body.name_ascii,
+            },
+         });
+   
+         if (founded)
+            return myResponse(res, false, "Category already exist", 409);
+
          const item = await Category.findByPk(id);
 
          if (!item) throw new ObjectNotFound("");
@@ -129,7 +157,11 @@ class categoryHandler {
       }
    }
 
-   async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+   async delete(
+      req: Request<{ id: string }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
          const category = await Category.findByPk(+id, {

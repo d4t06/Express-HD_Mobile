@@ -12,6 +12,15 @@ class BrandHandler {
          const value = brandSchema.validate(body);
 
          if (value.error) throw new BadRequest(value.error.message);
+         const founded = await Brand.findOne({
+            where: {
+               name_ascii: body.name_ascii,
+            },
+         });
+
+         if (founded)
+            return myResponse(res, false, "Category already exist", 409);
+
          const brand = await Brand.create(body);
 
          return myResponse(res, true, "add brand successful", 200, brand);
@@ -20,13 +29,26 @@ class BrandHandler {
       }
    }
 
-   async update(req: Request<{ id: number }>, res: Response, next: NextFunction) {
+   async update(
+      req: Request<{ id: number }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
          const body = req.body;
          const value = brandSchema.validate(body);
 
          if (Number.isNaN(+id)) throw new BadRequest("");
+         
+         const founded = await Brand.findOne({
+            where: {
+               name_ascii: body.name_ascii,
+            },
+         });
+   
+         if (founded)
+            return myResponse(res, false, "Category already exist", 409);
 
          const oldBrand = await Brand.findByPk(id);
          if (!oldBrand) throw new ObjectNotFound("");
@@ -42,7 +64,11 @@ class BrandHandler {
       }
    }
 
-   async delete(req: Request<{ id: number }>, res: Response, next: NextFunction) {
+   async delete(
+      req: Request<{ id: number }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
 

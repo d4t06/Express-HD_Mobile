@@ -3,12 +3,12 @@ import myResponse from "../system/myResponse";
 
 const jwt = require("jsonwebtoken");
 
-export default async function decodeToken(
+export default async function requireAuth(
    req: Request | any,
    res: Response,
    next: NextFunction
 ) {
-   res.locals.tokenUsername = "";
+   res.locals.user = "";
 
    try {
       const auth = req.headers.authorization;
@@ -22,7 +22,9 @@ export default async function decodeToken(
          role: string;
       };
 
-      res.locals.tokenUsername = decode.username;
+      console.log(">>> inside require auth");
+
+      res.locals.user = decode;
 
       next();
    } catch (error) {

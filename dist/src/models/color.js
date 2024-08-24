@@ -15,15 +15,15 @@ Color.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    product_ascii: {
+    product_id: {
+        allowNull: false,
+        type: sequelize_1.DataTypes.NUMBER,
+    },
+    name: {
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },
-    color: {
-        allowNull: false,
-        type: sequelize_1.DataTypes.STRING,
-    },
-    color_ascii: {
+    name_ascii: {
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },
@@ -39,7 +39,4 @@ Color.hasOne(productSlider_1.default, {
     foreignKey: "color_id",
     as: "product_slider",
 });
-// ProductSlider.belongsTo(Color, {
-//    foreignKey: "color_id",
-// });
 exports.default = Color;

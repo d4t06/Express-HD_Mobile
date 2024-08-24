@@ -12,14 +12,22 @@ const combine_1 = __importDefault(require("./combine"));
 const description_1 = __importDefault(require("./description"));
 const defaultProductVariant_1 = __importDefault(require("./defaultProductVariant"));
 const productSlider_1 = __importDefault(require("./productSlider"));
+const cartItem_1 = __importDefault(require("./cartItem"));
+const productRating_1 = __importDefault(require("./productRating"));
 class Product extends sequelize_1.Model {
 }
 Product.init({
-    product_ascii: {
-        type: sequelize_1.DataTypes.STRING,
+    id: {
+        type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
-    product: {
+    name: {
+        allowNull: false,
+        type: sequelize_1.DataTypes.STRING,
+    },
+    name_ascii: {
+        unique: true,
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },
@@ -40,30 +48,38 @@ Product.init({
     tableName: "Products",
 });
 Product.hasMany(color_1.default, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
     as: "colors",
 });
 Product.hasMany(variant_1.default, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
     as: "variants",
 });
 Product.hasMany(productAttribute_1.default, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
     as: "attributes",
 });
 Product.hasMany(combine_1.default, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
     as: "combines",
 });
 Product.hasOne(description_1.default, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
     as: "description",
 });
 Product.hasOne(defaultProductVariant_1.default, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
     as: "default_variant",
 });
+Product.hasOne(productRating_1.default, {
+    foreignKey: "product_id",
+    as: "ratings",
+});
 productSlider_1.default.belongsTo(Product, {
-    foreignKey: "product_ascii",
+    foreignKey: "product_id",
+});
+cartItem_1.default.belongsTo(Product, {
+    foreignKey: "product_id",
+    as: "product",
 });
 exports.default = Product;

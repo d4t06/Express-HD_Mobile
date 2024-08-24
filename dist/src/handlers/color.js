@@ -42,16 +42,16 @@ class colorHandler {
                 const color = yield color_2.default.create(body);
                 // add slider
                 const newSlider = yield new slider_1.default({
-                    name: `for ${color.product_ascii} ${color.color_ascii}`,
+                    name: `for ${color.product_id} ${color.name_ascii}`,
                 }).save();
                 yield new productSlider_1.default({
                     color_id: color.id,
-                    product_ascii: color.product_ascii,
+                    product_id: color.product_id,
                     slider_id: newSlider.id,
                 }).save();
                 const variants = yield variant_1.default.findAll({
                     where: {
-                        product_ascii: color.product_ascii,
+                        product_id: color.product_id,
                     },
                 });
                 const newCombines = [];
@@ -64,7 +64,7 @@ class colorHandler {
                             color_id: color.id,
                             price: 0,
                             quantity: 0,
-                            product_ascii: color.product_ascii,
+                            product_id: color.product_id,
                             variant_id: v.id,
                         }).save();
                         newCombines.push(combine);

@@ -17,6 +17,7 @@ const category_1 = __importDefault(require("../models/category"));
 const image_1 = __importDefault(require("../models/image"));
 const myResponse_1 = __importDefault(require("../system/myResponse"));
 const BadRequest_1 = __importDefault(require("../errors/BadRequest"));
+const brand_1 = __importDefault(require("../models/brand"));
 const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
 const categorySlider_1 = __importDefault(require("../models/categorySlider"));
 const slider_1 = __importDefault(require("../models/slider"));
@@ -69,11 +70,17 @@ class categoryHandler {
                 const value = category_2.default.validate(body);
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
-                // create category
+                const founded = yield category_1.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Category already exist", 409);
                 const category = yield category_1.default.create(body);
                 // create slider
                 const slider = yield slider_1.default.create({
-                    name: `slider for ${category.category_ascii}`,
+                    name: `slider for ${category.name}`,
                 });
                 yield categorySlider_1.default.create({
                     category_id: category.id,
@@ -118,6 +125,13 @@ class categoryHandler {
                 const value = category_2.default.validate(body);
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
+                const founded = yield brand_1.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Category already exist", 409);
                 const item = yield category_1.default.findByPk(id);
                 if (!item)
                     throw new ObjectNotFound_1.default("");

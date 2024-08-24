@@ -1,25 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import myResponse from "../system/myResponse";
 
-const jwt = require("jsonwebtoken");
-
 export default function requireRole(requireRole: "ADMIN" | "") {
-   return async function (req: Request | any, res: Response, next: NextFunction) {
-      const auth = req.headers.authorization;
-      if (!auth || !auth.startsWith("Bearer "))
-         return myResponse(res, false, "Unauthorized", 401);
-
-      const token = auth.split(" ")[1];
-
+   return async function (
+      req: Request | any,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
-         const decode = jwt.verify(token, "nguyenhuudat") as {
-            username: string;
-            role: string;
-         };
+         console.log(">>> inside require role, ", res.locals.user);
 
-         console.log("role middleware check: ", decode.role);
-
-         if (!decode.role.includes(requireRole))
+         if (!res.locals.user.role.includes(requireRole))
             return myResponse(
                res,
                false,
@@ -29,6 +20,7 @@ export default function requireRole(requireRole: "ADMIN" | "") {
 
          next();
       } catch (error) {
+
          return myResponse(
             res,
             false,

@@ -18,26 +18,29 @@ const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
 const image_1 = __importDefault(require("../models/image"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const helper_1 = require("../system/helper");
-const PAGE_SIZE = 18;
+const PAGE_SIZE = 6;
 cloudinary_1.default.v2.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET,
 });
-console.log('check process', process.env.CLOUD_NAME);
 class priceRangeHandler {
     findAll(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { page = 1 } = req.query;
+                const { page, size } = req.query;
+                const _size = (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+                const _page = (page && typeof page === "string" && +page) || 1;
                 const { rows, count } = yield image_1.default.findAndCountAll({
-                    offset: (+page - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
+                    offset: (+_page - 1) * _size,
+                    limit: _size,
                     order: [["createdAt", "DESC"]],
                 });
                 return (0, myResponse_1.default)(res, true, "add image successful", 200, {
                     images: rows,
                     count,
+                    page: _page,
+                    page_size: _size,
                 });
             }
             catch (error) {

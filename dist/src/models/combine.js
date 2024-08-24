@@ -14,9 +14,9 @@ Combine.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    product_ascii: {
+    product_id: {
         allowNull: false,
-        type: sequelize_1.DataTypes.STRING,
+        type: sequelize_1.DataTypes.NUMBER,
     },
     color_id: {
         allowNull: false,

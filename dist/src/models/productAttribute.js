@@ -9,13 +9,17 @@ class ProductAttribute extends sequelize_1.Model {
 }
 ProductAttribute.init({
     id: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.NUMBER,
         primaryKey: true,
         autoIncrement: true,
     },
     category_attribute_id: {
         allowNull: false,
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.NUMBER,
+    },
+    product_id: {
+        allowNull: false,
+        type: sequelize_1.DataTypes.NUMBER,
     },
     value: {
         allowNull: false,

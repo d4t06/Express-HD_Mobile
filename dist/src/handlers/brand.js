@@ -25,6 +25,13 @@ class BrandHandler {
                 const value = brand_2.default.validate(body);
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
+                const founded = yield brand_1.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Category already exist", 409);
                 const brand = yield brand_1.default.create(body);
                 return (0, myResponse_1.default)(res, true, "add brand successful", 200, brand);
             }
@@ -41,6 +48,13 @@ class BrandHandler {
                 const value = brand_2.default.validate(body);
                 if (Number.isNaN(+id))
                     throw new BadRequest_1.default("");
+                const founded = yield brand_1.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Category already exist", 409);
                 const oldBrand = yield brand_1.default.findByPk(id);
                 if (!oldBrand)
                     throw new ObjectNotFound_1.default("");

@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
 const categorySchema = joi_1.default.object({
     id: joi_1.default.number(),
-    category: joi_1.default.string().required(),
-    category_ascii: joi_1.default.string().required(),
+    name: joi_1.default.string().required(),
+    name_ascii: joi_1.default.string().required(),
     hidden: joi_1.default.boolean(),
     attribute_order: joi_1.default.string().empty(""),
 });

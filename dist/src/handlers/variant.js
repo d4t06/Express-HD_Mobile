@@ -42,7 +42,7 @@ class variantHandler {
                 }).save();
                 const colors = yield color_1.default.findAll({
                     where: {
-                        product_ascii: newVariant.product_ascii,
+                        product_id: newVariant.product_id,
                     },
                 });
                 const newCombines = [];
@@ -55,7 +55,7 @@ class variantHandler {
                             color_id: c.id,
                             price: 0,
                             quantity: 0,
-                            product_ascii: newVariant.product_ascii,
+                            product_id: newVariant.product_id,
                             variant_id: newVariant.id,
                         }).save();
                         newCombines.push(combine);

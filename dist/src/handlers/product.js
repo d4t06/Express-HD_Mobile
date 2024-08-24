@@ -31,64 +31,94 @@ const sliderImage_1 = __importDefault(require("../models/sliderImage"));
 const combine_1 = __importDefault(require("../models/combine"));
 const sequelize_1 = require("sequelize");
 const helper_1 = require("../system/helper");
-const PAGE_SIZE = 1;
-;
-class priceRangeHandler {
+const PAGE_SIZE = 6;
+class ProductHandler {
     findAll(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = req.query;
-                const { page = 1, brand_id, category_id } = query;
+                const { page, brand_id, category_id, price, size } = query;
                 const sort = res.locals.sort;
+                const _size = (size && typeof size === "string" && +size < 12 && +size) ||
+                    PAGE_SIZE;
+                const _page = (page && typeof page === "string" && +page) || 1;
                 const where = {};
-                const order = [];
+                const combineWhere = {};
+                const order = [["id", "DESC"]];
                 if (category_id)
                     where.category_id = category_id;
                 if (brand_id)
                     where.brand_id = {
                         [sequelize_1.Op.in]: brand_id,
                     };
+                if (price) {
+                    const [gThan, lThan] = price;
+                    if (!Number.isNaN(+gThan) && !Number.isNaN(+lThan)) {
+                        combineWhere.price = {
+                            [sequelize_1.Op.and]: {
+                                [sequelize_1.Op.gt]: +gThan * 1000000,
+                                [sequelize_1.Op.lt]: +lThan * 1000000,
+                            },
+                        };
+                    }
+                }
                 if (sort.enable) {
+                    // if (sort.column === "price") {
+                    // order.push([
+                    //    { model: DefaultProductVariant, as: "default_variant" },
+                    //    {
+                    //       model: Variant,
+                    //       as: "variant",
+                    //    },
+                    //    {
+                    //       model: DefaultVariantCombine,
+                    //       as: "default_combine",
+                    //    },
+                    //    {
+                    //       model: Combine,
+                    //       as: "combine",
+                    //    },
+                    //    sort.column,
+                    //    sort.type,
+                    // ]);
+                    // }
                     if (sort.column === "price") {
                         order.push([
-                            { model: defaultProductVariant_1.default, as: "default_variant" },
-                            {
-                                model: variant_1.default,
-                                as: "variant",
-                            },
-                            {
-                                model: defaultVariantCombine_1.default,
-                                as: "default_combine",
-                            },
-                            {
-                                model: combine_1.default,
-                                as: "combine",
-                            },
+                            "default_variant",
+                            "variant",
+                            "default_combine",
+                            "combine",
                             sort.column,
                             sort.type,
                         ]);
                     }
                 }
                 const { count, rows } = yield product_2.default.findAndCountAll({
-                    offset: (+page - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
+                    offset: (_page - 1) * _size,
+                    limit: _size,
                     distinct: true,
                     include: [
                         {
+                            required: true,
                             model: defaultProductVariant_1.default,
                             as: "default_variant",
                             include: [
                                 {
+                                    required: true,
                                     model: variant_1.default,
                                     as: "variant",
                                     include: [
                                         {
+                                            required: true,
                                             model: defaultVariantCombine_1.default,
                                             as: "default_combine",
                                             include: [
                                                 {
+                                                    required: true,
                                                     model: combine_1.default,
                                                     as: "combine",
+                                                    // order,
+                                                    where: combineWhere,
                                                 },
                                             ],
                                         },
@@ -116,11 +146,11 @@ class priceRangeHandler {
                     order,
                     where,
                 });
-                console.log("check sort", sort);
                 return (0, myResponse_1.default)(res, true, "get all product successful", 200, {
                     products: rows,
                     count,
-                    pageSize: PAGE_SIZE,
+                    page: _page,
+                    size: _size,
                     sort: sort.enable,
                     category_id: +category_id || null,
                     brand_id: (brand_id === null || brand_id === void 0 ? void 0 : brand_id.length) ? brand_id : null,
@@ -136,8 +166,8 @@ class priceRangeHandler {
     findOne(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { productAscii } = req.params;
-                const product = yield product_2.default.findByPk(productAscii, {
+                const { productId } = req.params;
+                const product = yield product_2.default.findByPk(productId, {
                     include: [
                         {
                             model: category_1.default,
@@ -205,15 +235,25 @@ class priceRangeHandler {
             try {
                 const body = req.body;
                 const value = product_1.default.validate(body);
+                // check
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
+                if (!body.category_id || !body.brand_id)
+                    throw new BadRequest_1.default("");
+                const founded = yield product_2.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Product name already exist", 409);
                 const newProduct = yield product_2.default.create(body);
                 yield new description_1.default({
-                    content: newProduct.product,
-                    product_ascii: newProduct.product_ascii,
+                    content: newProduct.name,
+                    product_id: newProduct.id,
                 }).save();
                 yield new defaultProductVariant_1.default({
-                    product_ascii: newProduct.product_ascii,
+                    product_id: newProduct.id,
                 }).save();
                 return (0, myResponse_1.default)(res, true, "add product successful", 200, newProduct);
             }
@@ -225,14 +265,22 @@ class priceRangeHandler {
     update(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { productAscii } = req.params;
+                const { productId } = req.params;
                 const body = req.body;
                 // const value = productSchema.validate(body);
-                const item = yield product_2.default.findByPk(productAscii);
+                const item = yield product_2.default.findByPk(productId);
                 if (!item)
                     throw new ObjectNotFound_1.default("");
+                const founded = yield product_2.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Product name already exist", 409);
                 // if (value.error) throw new BadRequest(value.error.message);
                 yield item.update(body);
+                yield product_2.default.update(body, { where: { id: +productId } });
                 return (0, myResponse_1.default)(res, true, "update product successful", 200);
             }
             catch (error) {
@@ -242,9 +290,36 @@ class priceRangeHandler {
     }
     search(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { q } = req.query;
-            const products = yield product_2.default.findAll({
-                limit: 20,
+            const { q, page, size } = req.query;
+            const _size = (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+            const _page = (page && typeof page === "string" && +page) || 1;
+            const sort = res.locals.sort;
+            const order = [];
+            if (sort.enable) {
+                if (sort.column === "price") {
+                    order.push([
+                        { model: defaultProductVariant_1.default, as: "default_variant" },
+                        {
+                            model: variant_1.default,
+                            as: "variant",
+                        },
+                        {
+                            model: defaultVariantCombine_1.default,
+                            as: "default_combine",
+                        },
+                        {
+                            model: combine_1.default,
+                            as: "combine",
+                        },
+                        sort.column,
+                        sort.type,
+                    ]);
+                }
+            }
+            const { count, rows } = yield product_2.default.findAndCountAll({
+                offset: (_page - 1) * _size,
+                limit: _size,
+                distinct: true,
                 include: [
                     {
                         model: defaultProductVariant_1.default,
@@ -268,19 +343,43 @@ class priceRangeHandler {
                             },
                         ],
                     },
+                    {
+                        model: variant_1.default,
+                        as: "variants",
+                        include: [
+                            {
+                                model: defaultVariantCombine_1.default,
+                                as: "default_combine",
+                                include: [
+                                    {
+                                        model: combine_1.default,
+                                        as: "combine",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
                 ],
                 where: {
-                    product_ascii: { [sequelize_1.Op.like]: `${(0, helper_1.generateId)(q)}%` },
+                    name_ascii: { [sequelize_1.Op.like]: `${(0, helper_1.generateId)(q)}%` },
                 },
             });
-            return (0, myResponse_1.default)(res, true, "search successful", 200, products);
+            return (0, myResponse_1.default)(res, true, "search product successful", 200, {
+                products: rows,
+                count,
+                page_size: _size,
+                page: _page,
+                sort: sort.enable,
+                column: sort.enable ? sort.column : null,
+                type: sort.enable ? sort.type : null,
+            });
         });
     }
     delete(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { productAscii } = req.params;
-                const item = yield product_2.default.findByPk(productAscii);
+                const { productId } = req.params;
+                const item = yield product_2.default.findByPk(productId);
                 if (!item)
                     throw new ObjectNotFound_1.default("");
                 item.destroy();
@@ -293,4 +392,4 @@ class priceRangeHandler {
         });
     }
 }
-exports.default = new priceRangeHandler();
+exports.default = new ProductHandler();

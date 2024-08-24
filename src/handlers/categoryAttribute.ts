@@ -11,16 +11,41 @@ class categoryAttributeHandler {
          const body = req.body;
          const value = categoryAttribute.validate(body);
 
+         // check
          if (value.error) throw new BadRequest(value.error.message);
+         const founded = await CategoryAttribute.findOne({
+            where: {
+               name_ascii: body.name_ascii,
+            },
+         });
+
+         if (founded)
+            return myResponse(
+               res,
+               false,
+               "Category attribute already exist",
+               409
+            );
+
          const brand = await CategoryAttribute.create(body);
 
-         return myResponse(res, true, "add category attribute successful", 200, brand);
+         return myResponse(
+            res,
+            true,
+            "add category attribute successful",
+            200,
+            brand
+         );
       } catch (error) {
          next(error);
       }
    }
 
-   async update(req: Request<{ id: number }>, res: Response, next: NextFunction) {
+   async update(
+      req: Request<{ id: number }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
          const body = req.body;
@@ -31,18 +56,44 @@ class categoryAttributeHandler {
          const item = await CategoryAttribute.findByPk(id);
          if (!item) throw new ObjectNotFound("");
 
+         // check
          if (value.error) throw new BadRequest(value.error.message);
+
+         const founded = await CategoryAttribute.findOne({
+            where: {
+               name_ascii: body.name_ascii,
+            },
+         });
+
+         if (founded)
+            return myResponse(
+               res,
+               false,
+               "Category attribute already exist",
+               409
+            );
+
          await CategoryAttribute.update(body, { where: { id } });
 
          Object.assign(item, body);
 
-         return myResponse(res, true, "update category attribute successful", 200, item);
+         return myResponse(
+            res,
+            true,
+            "update category attribute successful",
+            200,
+            item
+         );
       } catch (error) {
          next(error);
       }
    }
 
-   async delete(req: Request<{ id: number }>, res: Response, next: NextFunction) {
+   async delete(
+      req: Request<{ id: number }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
 
@@ -52,7 +103,12 @@ class categoryAttributeHandler {
 
          item.destroy();
 
-         return myResponse(res, true, "delete category attribute successful", 200);
+         return myResponse(
+            res,
+            true,
+            "delete category attribute successful",
+            200
+         );
       } catch (error) {
          console.log(error);
          next(error);

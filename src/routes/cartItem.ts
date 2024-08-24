@@ -1,12 +1,12 @@
 import { Router } from "express";
 import cartItemHandler from "../handlers/cartItem";
-import decodeToken from "../middlewares/decodeToken";
+import requireAuth from "../middlewares/requireAuth";
 
 const cartItemRouter = Router();
 
 cartItemRouter.get("/:username", cartItemHandler.findAll);
 
-cartItemRouter.use(decodeToken);
+cartItemRouter.use(requireAuth);
 
 cartItemRouter.post("/", cartItemHandler.add);
 cartItemRouter.put("/:id", cartItemHandler.update);

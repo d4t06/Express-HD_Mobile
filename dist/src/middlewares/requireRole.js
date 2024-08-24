@@ -29,7 +29,7 @@ function requireRole(requireRole) {
                 next();
             }
             catch (error) {
-                return (0, myResponse_1.default)(res, false, "Insufficient privilege or the access token provided is expired, revoked", 403);
+                return (0, myResponse_1.default)(res, false, "The access token provided is expired, revoked, malformed or invalid for other reasons", 401);
             }
         });
     };

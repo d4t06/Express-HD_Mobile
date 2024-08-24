@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateId = void 0;
+exports.countDateDiff = exports.generateId = void 0;
 const generateId = (name) => {
     const convertToEn = (str) => {
         const newString = str
@@ -17,3 +17,16 @@ const generateId = (name) => {
     return convertToEn(name).replace(/[\W_]/g, "-");
 };
 exports.generateId = generateId;
+const countDateDiff = (createAt) => {
+    const current = new Date();
+    const hourDiff = +((current.getTime() - createAt.getTime()) /
+        (1000 * 60 * 60)).toFixed(1);
+    if (hourDiff / 24 > 30)
+        return createAt.toLocaleDateString("en-gb");
+    if (hourDiff / 24 > 1)
+        return `${Math.floor(hourDiff / 24)} days ago`;
+    if (hourDiff > 1)
+        return `${Math.floor(hourDiff)} hours ago`;
+    return `Less than a hour`;
+};
+exports.countDateDiff = countDateDiff;

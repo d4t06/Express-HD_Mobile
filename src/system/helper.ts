@@ -16,20 +16,17 @@ export const generateId = (name: string) => {
 
 export const countDateDiff = (createAt: Date) => {
    const current = new Date();
- 
+
    const hourDiff = +(
-     (current.getTime() - createAt.getTime()) /
-     (1000 * 60 * 60)
+      (current.getTime() - createAt.getTime()) /
+      (1000 * 60 * 60)
    ).toFixed(1);
- 
-   console.log(hourDiff);
- 
-   if (hourDiff / 24 > 30) return createAt.toLocaleDateString('en-gb');
- 
+
+   if (hourDiff / 24 > 30) return createAt.toLocaleDateString("en-gb");
+
    if (hourDiff / 24 > 1) return `${Math.floor(hourDiff / 24)} days ago`;
- 
+
    if (hourDiff > 1) return `${Math.floor(hourDiff)} hours ago`;
- 
+
    return `Less than a hour`;
- };
- 
+};

@@ -19,11 +19,11 @@ CategoryAttribute.init({
         allowNull: false,
         type: sequelize_1.DataTypes.INTEGER,
     },
-    attribute: {
+    name: {
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },
-    attribute_ascii: {
+    name_ascii: {
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },

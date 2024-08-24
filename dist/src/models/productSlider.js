@@ -17,8 +17,8 @@ ProductSlider.init({
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
-    product_ascii: {
-        type: sequelize_1.DataTypes.STRING,
+    product_id: {
+        type: sequelize_1.DataTypes.NUMBER,
         allowNull: false,
     },
     slider_id: {

@@ -8,5 +8,5 @@ const description_1 = __importDefault(require("../handlers/description"));
 const requireRole_1 = __importDefault(require("../middlewares/requireRole"));
 const descriptionRouter = (0, express_1.Router)();
 descriptionRouter.use((0, requireRole_1.default)('ADMIN'));
-descriptionRouter.put("/:productAscii", description_1.default.update);
+descriptionRouter.put("/:productId", description_1.default.update);
 exports.default = descriptionRouter;

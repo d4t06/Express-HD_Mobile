@@ -23,8 +23,16 @@ class categoryAttributeHandler {
             try {
                 const body = req.body;
                 const value = categoryAttribute_1.default.validate(body);
+                // check
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
+                const founded = yield categoryAttribute_2.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Category attribute already exist", 409);
                 const brand = yield categoryAttribute_2.default.create(body);
                 return (0, myResponse_1.default)(res, true, "add category attribute successful", 200, brand);
             }
@@ -44,8 +52,16 @@ class categoryAttributeHandler {
                 const item = yield categoryAttribute_2.default.findByPk(id);
                 if (!item)
                     throw new ObjectNotFound_1.default("");
+                // check
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
+                const founded = yield categoryAttribute_2.default.findOne({
+                    where: {
+                        name_ascii: body.name_ascii,
+                    },
+                });
+                if (founded)
+                    return (0, myResponse_1.default)(res, false, "Category attribute already exist", 409);
                 yield categoryAttribute_2.default.update(body, { where: { id } });
                 Object.assign(item, body);
                 return (0, myResponse_1.default)(res, true, "update category attribute successful", 200, item);
