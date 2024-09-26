@@ -30,3 +30,17 @@ export const countDateDiff = (createAt: Date) => {
 
    return `Less than a hour`;
 };
+
+export function getProductName(existingNames: string[], name: string) {
+   if (!existingNames.includes(name)) return name;
+
+   let counter = 1;
+   let newName = name;
+
+   while (existingNames.includes(newName)) {
+      counter++;
+      newName = `${name} (${counter})`;
+   }
+
+   return newName;
+}

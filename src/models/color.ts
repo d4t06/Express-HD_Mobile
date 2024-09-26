@@ -5,6 +5,7 @@ import {
    InferAttributes,
    InferCreationAttributes,
    Model,
+   NonAttribute,
 } from "sequelize";
 
 import sequelize from "../config/sequelize";
@@ -16,6 +17,7 @@ class Color extends Model<InferAttributes<Color>, InferCreationAttributes<Color>
    declare product_id: ForeignKey<number>;
    declare name: string;
    declare name_ascii: string;
+   declare product_slider: NonAttribute<ProductSlider>;
 }
 
 Color.init(

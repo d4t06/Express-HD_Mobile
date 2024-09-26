@@ -1,4 +1,4 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import productHandler from "../handlers/product";
 import sortMiddleware from "../middlewares/sortMiddleware";
 import requireRole from "../middlewares/requireRole";

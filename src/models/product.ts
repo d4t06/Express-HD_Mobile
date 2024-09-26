@@ -9,28 +9,36 @@ import {
 } from "sequelize";
 
 import sequelize from "../config/sequelize";
-import Color from "./color";
-import Variant from "./variant";
-import ProductAttribute from "./productAttribute";
-import Combine from "./combine";
-import Description from "./description";
-import DefaultProductVariant from "./defaultProductVariant";
-import ProductSlider from "./productSlider";
-import CartItem from "./cartItem";
-import Rating from "./productRating";
+import {
+   Color,
+   Variant,
+   ProductAttribute,
+   Combine,
+   Description,
+   DefaultProductVariant,
+   ProductSlider,
+   CartItem,
+   ProductRating,
+   Category,
+} from ".";
 
-class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Product>> {
+class Product extends Model<
+   InferAttributes<Product>,
+   InferCreationAttributes<Product>
+> {
    declare id: CreationOptional<number>;
    declare name: string;
    declare name_ascii: string;
    declare image_url: string;
    declare category_id: ForeignKey<number>;
+   declare category: NonAttribute<Category>;
    declare brand_id: ForeignKey<number>;
    declare combines: NonAttribute<Combine[]>;
    declare variants: NonAttribute<Variant[]>;
    declare colors: NonAttribute<Color[]>;
    declare description: NonAttribute<Description>;
    declare default_variant: NonAttribute<Variant>;
+   declare attributes: NonAttribute<ProductAttribute[]>;
 }
 
 Product.init(
@@ -98,7 +106,7 @@ Product.hasOne(DefaultProductVariant, {
    as: "default_variant",
 });
 
-Product.hasOne(Rating, {
+Product.hasOne(ProductRating, {
    foreignKey: "product_id",
    as: "ratings",
 });

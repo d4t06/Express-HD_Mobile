@@ -4,6 +4,7 @@ import {
    InferAttributes,
    InferCreationAttributes,
    Model,
+   NonAttribute,
 } from "sequelize";
 
 import CategorySlider from "./categorySlider";
@@ -14,6 +15,7 @@ import ProductSlider from "./productSlider";
 class Slider extends Model<InferAttributes<Slider>, InferCreationAttributes<Slider>> {
    declare id: CreationOptional<number>;
    declare name: string;
+   declare slider_images: NonAttribute<SliderImage[]>;
 }
 
 Slider.init(
