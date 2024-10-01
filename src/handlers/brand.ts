@@ -40,13 +40,13 @@ class BrandHandler {
          const value = brandSchema.validate(body);
 
          if (Number.isNaN(+id)) throw new BadRequest("");
-         
+
          const founded = await Brand.findOne({
             where: {
                name_ascii: body.name_ascii,
             },
          });
-   
+
          if (founded)
             return myResponse(res, false, "Category already exist", 409);
 

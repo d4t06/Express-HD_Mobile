@@ -18,8 +18,9 @@ import {
    DefaultProductVariant,
    DefaultVariantCombine,
 } from "../models";
-import { when } from "joi";
 import { generateId, getProductName } from "../system/helper";
+import BadRequest from "../errors/BadRequest";
+import ProductMangementService from "../services/productMangement";
 
 const PAGE_SIZE = 6;
 
@@ -245,6 +246,23 @@ class ProductManagement {
             200,
             newProduct
          );
+      } catch (error) {
+         next(error);
+      }
+   }
+
+   async JSONImport(
+      req: Request<{}, { data: any }>,
+      res: Response,
+      next: NextFunction
+   ) {
+      try {
+         const { data } = req.body;
+         if (!data) throw new BadRequest("");
+
+         const product = await ProductMangementService.jsonImporter(data);
+
+         return myResponse(res, true, "JSON import successful", 200, product);
       } catch (error) {
          next(error);
       }

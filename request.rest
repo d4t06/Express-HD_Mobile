@@ -1,6 +1,8 @@
 ###
-GET http://localhost:3000/categories
+GET http://localhost:3000/api/categories
 
+###
+GET http://localhost:3000/api/categories/less
 
 ###
 POST    http://localhost:3000/categories
@@ -36,3 +38,7 @@ POST     http://localhost:3000/api/product-variants
 content-Type: application/json
 
 {"product_id":"iphone-5","variant":"32GB","variant_ascii":"32gb"}
+
+###
+POST http://localhost:3000/api/product-management/json-import
+content-Type: application/json

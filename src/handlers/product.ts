@@ -265,12 +265,7 @@ class ProductHandler {
          });
 
          if (founded)
-            return myResponse(
-               res,
-               false,
-               "Product name already exist",
-               409
-            );
+            return myResponse(res, false, "Product name already exist", 409);
 
          const newProduct = await Product.create(body);
 
@@ -315,12 +310,7 @@ class ProductHandler {
          });
 
          if (founded)
-            return myResponse(
-               res,
-               false,
-               "Product name already exist",
-               409
-            );
+            return myResponse(res, false, "Product name already exist", 409);
 
          // if (value.error) throw new BadRequest(value.error.message);
          await item.update(body);
@@ -440,7 +430,9 @@ class ProductHandler {
          const item = await Product.findByPk(productId);
          if (!item) throw new ObjectNotFound("");
 
-         item.destroy();
+         // await item.product_slider.slider.destroy();
+
+         await item.destroy();
 
          return myResponse(res, true, "delete price range successful", 200);
       } catch (error) {

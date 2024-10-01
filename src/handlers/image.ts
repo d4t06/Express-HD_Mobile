@@ -3,6 +3,7 @@ import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
 import ObjectNotFound from "../errors/ObjectNotFound";
 import Image from "../models/image";
+import ImageService from "../services/image";
 
 import cloudinary from "cloudinary";
 import { generateId } from "../system/helper";
@@ -21,7 +22,8 @@ class priceRangeHandler {
          const { page, size } = req.query;
 
          const _size =
-            (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+            (size && typeof size === "string" && +size < 12 && +size) ||
+            PAGE_SIZE;
          const _page = (page && typeof page === "string" && +page) || 1;
 
          const { rows, count } = await Image.findAndCountAll({
@@ -41,7 +43,7 @@ class priceRangeHandler {
       }
    }
 
-   async add(req: Request, res: Response, next: NextFunction) {
+   async uploadFile(req: Request, res: Response, next: NextFunction) {
       try {
          const file = req.file;
          if (!file) throw new BadRequest("");
@@ -51,27 +53,36 @@ class priceRangeHandler {
          const b64 = Buffer.from(buffer).toString("base64");
          let dataURI = "data:" + mimetype + ";base64," + b64;
 
-         const imageUploadRes = await cloudinary.v2.uploader.upload(dataURI, {
-            resource_type: "auto",
-            folder: "hd-mobile-test",
-         });
+         const newImage = await ImageService.upload(dataURI);
 
-         const imageInfo = {
-            name: generateId(originalname),
-            public_id: imageUploadRes.public_id,
-            image_url: imageUploadRes.url,
-            size: Math.ceil(size / 1000),
-         };
-
-         const newImage = await Image.create(imageInfo);
-
-         return myResponse(res, true, "add image successful", 200, newImage);
+         return myResponse(res, true, "Upload image successful", 200, newImage);
       } catch (error) {
          next(error);
       }
    }
 
-   async delete(req: Request<{ id: number }>, res: Response, next: NextFunction) {
+   async uploadUrl(
+      req: Request<{ imageUrl: string }>,
+      res: Response,
+      next: NextFunction
+   ) {
+      try {
+         const { imageUrl } = req.params;
+         if (!imageUrl) throw new BadRequest("");
+
+         const newImage = await ImageService.upload(imageUrl);
+
+         return myResponse(res, true, "Upload image successful", 200, newImage);
+      } catch (error) {
+         next(error);
+      }
+   }
+
+   async delete(
+      req: Request<{ id: number }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
 

@@ -13,7 +13,8 @@ imageRouter.get("/", imageHandler.findAll);
 
 imageRouter.use(requireAuth, requireRole('ADMIN'))
 
-imageRouter.post("/", upload.single("image"), imageHandler.add);
+imageRouter.post("/", upload.single("image"), imageHandler.uploadFile);
+imageRouter.post("/url/:imageUrl", upload.single("image"), imageHandler.uploadUrl);
 imageRouter.delete("/:id", imageHandler.delete);
 
 export default imageRouter;

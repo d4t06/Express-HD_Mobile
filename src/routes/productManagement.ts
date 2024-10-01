@@ -14,4 +14,9 @@ productManagementRouter.get(
    ProductManagementHandler.duplicate
 );
 
+productManagementRouter.post(
+   "/json-import",
+   ProductManagementHandler.JSONImport
+);
+
 export default productManagementRouter;

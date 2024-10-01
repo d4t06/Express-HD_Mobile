@@ -6,8 +6,6 @@ import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
 import Brand from "../models/brand";
 import ObjectNotFound from "../errors/ObjectNotFound";
-import CategoryAttribute from "../models/categoryAttribute";
-import PriceRange from "../models/priceRange";
 import CategorySlider from "../models/categorySlider";
 import Slider from "../models/slider";
 import SliderImage from "../models/sliderImage";
@@ -48,6 +46,24 @@ class categoryHandler {
          });
 
          return myResponse(res, true, "get all categories", 200, categories);
+      } catch (error) {
+         next(error);
+      }
+   }
+
+   async findAllLess(_req: Request, res: Response, next: NextFunction) {
+      try {
+         const categories = await Category.findAll({
+            include: [
+               Category.associations.brands,
+               Category.associations.attributes,
+            ],
+            where: {
+               hidden: false,
+            },
+         });
+
+         return res.json(categories)
       } catch (error) {
          next(error);
       }
@@ -139,7 +155,7 @@ class categoryHandler {
                name_ascii: body.name_ascii,
             },
          });
-   
+
          if (founded)
             return myResponse(res, false, "Category already exist", 409);
 

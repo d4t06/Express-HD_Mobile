@@ -39,6 +39,7 @@ class Product extends Model<
    declare description: NonAttribute<Description>;
    declare default_variant: NonAttribute<Variant>;
    declare attributes: NonAttribute<ProductAttribute[]>;
+   declare product_slider: NonAttribute<ProductSlider>;
 }
 
 Product.init(
@@ -111,8 +112,11 @@ Product.hasOne(ProductRating, {
    as: "ratings",
 });
 
+
+Product.hasOne(ProductSlider)
 ProductSlider.belongsTo(Product, {
    foreignKey: "product_id",
+   as: 'product_slider'
 });
 
 CartItem.belongsTo(Product, {
