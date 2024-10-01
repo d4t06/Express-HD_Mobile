@@ -16,6 +16,7 @@ class categoryAttributeHandler {
          const founded = await CategoryAttribute.findOne({
             where: {
                name_ascii: body.name_ascii,
+               category_id: body.category_id
             },
          });
 

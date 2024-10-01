@@ -13,6 +13,7 @@ import {
 } from "../models";
 import { generateId } from "../system/helper";
 import myResponse from "../system/myResponse";
+import image from "./image";
 
 import ImageService from "./image";
 
@@ -83,12 +84,13 @@ class ProductManagementService {
          const sliderImageSchemas = [];
 
          let counter = 0;
-         for (const imageUrl of jsonProduct.sliders) {
+         const newImages = await Promise.all(jsonProduct.sliders.map(url => ImageService.upload(url)))
+
+         for (const image of newImages) {
             if (counter > 3) break;
-            const newImage = await ImageService.upload(imageUrl);
 
             const schema = {
-               image_id: newImage.id,
+               image_id: image.id,
                link_to: "",
                slider_id: newSlider.id,
             };

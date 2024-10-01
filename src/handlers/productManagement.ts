@@ -43,7 +43,7 @@ class ProductManagement {
          const sort = res.locals.sort as Sort;
 
          const _size =
-            (size && typeof size === "string" && +size < 12 && +size) ||
+            (size && typeof size === "string" && +size <= 100 && +size) ||
             PAGE_SIZE;
          const _page = (page && typeof page === "string" && +page) || 1;
 

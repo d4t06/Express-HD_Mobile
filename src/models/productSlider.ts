@@ -49,4 +49,8 @@ ProductSlider.init(
    }
 );
 
+// ProductSlider.belongsTo(Slider, {
+   
+// })
+
 export default ProductSlider;
