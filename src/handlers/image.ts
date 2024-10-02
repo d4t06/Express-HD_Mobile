@@ -3,10 +3,9 @@ import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
 import ObjectNotFound from "../errors/ObjectNotFound";
 import Image from "../models/image";
-import ImageService from "../services/image";
+import CloudinaryService from "../services/cloudinary";
 
 import cloudinary from "cloudinary";
-import { generateId } from "../system/helper";
 
 const PAGE_SIZE = 6;
 
@@ -22,8 +21,7 @@ class priceRangeHandler {
          const { page, size } = req.query;
 
          const _size =
-            (size && typeof size === "string" && +size < 50 && +size) ||
-            PAGE_SIZE;
+            (size && typeof size === "string" && +size < 50 && +size) || PAGE_SIZE;
          const _page = (page && typeof page === "string" && +page) || 1;
 
          const { rows, count } = await Image.findAndCountAll({
@@ -48,12 +46,12 @@ class priceRangeHandler {
          const file = req.file;
          if (!file) throw new BadRequest("");
 
-         const { buffer, mimetype, originalname, size } = file;
+         const { buffer, mimetype } = file;
 
          const b64 = Buffer.from(buffer).toString("base64");
          let dataURI = "data:" + mimetype + ";base64," + b64;
 
-         const newImage = await ImageService.upload(dataURI);
+         const newImage = await CloudinaryService.upload(dataURI);
 
          return myResponse(res, true, "Upload image successful", 200, newImage);
       } catch (error) {
@@ -70,7 +68,9 @@ class priceRangeHandler {
          const { imageUrl } = req.params;
          if (!imageUrl) throw new BadRequest("");
 
-         const newImage = await ImageService.upload(imageUrl);
+         const imageInfo = await CloudinaryService.upload(imageUrl);
+
+         const newImage = await Image.create(imageInfo);
 
          return myResponse(res, true, "Upload image successful", 200, newImage);
       } catch (error) {
@@ -78,21 +78,22 @@ class priceRangeHandler {
       }
    }
 
-   async delete(
-      req: Request<{ id: number }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
       try {
          const { id } = req.params;
 
-         if (Number.isNaN(+id)) throw new BadRequest("");
-         const item = await Image.findByPk(id);
+         const item = await Image.findOne({
+            where: {
+               public_id: id,
+            },
+         });
          if (!item) throw new ObjectNotFound("");
 
-         item.destroy();
+         await CloudinaryService.delete(id);
 
-         return myResponse(res, true, "delete price range successful", 200);
+         await item.destroy();
+
+         return myResponse(res, true, "Delete image successful", 200);
       } catch (error) {
          console.log(error);
          next(error);

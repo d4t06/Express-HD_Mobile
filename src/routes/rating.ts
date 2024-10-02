@@ -8,6 +8,7 @@ ratingRouter.get("/", RatingHandler.getProductRating);
 ratingRouter.get("/avg", RatingHandler.getAverage);
 
 ratingRouter.use(requireAuth);
+
 ratingRouter.post("/", RatingHandler.add);
 
 export default ratingRouter;

@@ -10,7 +10,7 @@ import SliderImage from "../models/sliderImage";
 import Variant from "../models/variant";
 
 class ProductService {
-   async findOne(id: string) {
+   async findOne(id: number) {
       const product = await Product.findByPk(id, {
          include: [
             {

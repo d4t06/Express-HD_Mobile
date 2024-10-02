@@ -1,6 +1,5 @@
 import cloudinary from "cloudinary";
 import { generateId } from "../system/helper";
-import { Image } from "../models";
 
 cloudinary.v2.config({
    cloud_name: process.env.CLOUD_NAME,
@@ -22,9 +21,11 @@ class ImageService {
          size: Math.ceil(res.bytes / 1024),
       };
 
-      const newImage = await Image.create(imageInfo);
+      return imageInfo;
+   }
 
-      return newImage;
+   async delete(publicId: string) {
+      await cloudinary.v2.uploader.destroy(publicId);
    }
 }
 
