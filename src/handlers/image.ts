@@ -22,7 +22,7 @@ class priceRangeHandler {
          const { page, size } = req.query;
 
          const _size =
-            (size && typeof size === "string" && +size < 12 && +size) ||
+            (size && typeof size === "string" && +size < 50 && +size) ||
             PAGE_SIZE;
          const _page = (page && typeof page === "string" && +page) || 1;
 

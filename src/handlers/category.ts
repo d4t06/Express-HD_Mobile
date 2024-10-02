@@ -9,8 +9,10 @@ import ObjectNotFound from "../errors/ObjectNotFound";
 import CategorySlider from "../models/categorySlider";
 import Slider from "../models/slider";
 import SliderImage from "../models/sliderImage";
-import sliderImage from "./sliderImage";
 import categorySchema from "../schemas/category";
+import { generateId } from "../system/helper";
+import { CategoryAttribute } from "../models";
+import category from "../services/category";
 
 class categoryHandler {
    async findAll(_req: Request, res: Response, next: NextFunction) {
@@ -63,7 +65,7 @@ class categoryHandler {
             },
          });
 
-         return res.json(categories)
+         return res.json(categories);
       } catch (error) {
          next(error);
       }
@@ -185,28 +187,41 @@ class categoryHandler {
                {
                   model: CategorySlider,
                   as: "category_slider",
-                  include: [
-                     {
-                        model: Slider,
-                        as: "slider",
-                     },
-                  ],
+                  include: [CategorySlider.associations.slider],
                },
             ],
          });
          if (!category) throw new ObjectNotFound("");
 
-         await Category.destroy({ where: { id: category.id } });
+         if (category.category_slider)
+            await category.category_slider.slider.destroy();
 
-         await Slider.destroy({
-            where: {
-               id: category.category_slider.slider.id,
-            },
-         });
+         await category.destroy();
 
          return myResponse(res, true, "delete category successful", 200);
       } catch (error) {
          console.log(error);
+         next(error);
+      }
+   }
+
+   async import(
+      req: Request<{}, {}, { data: any }>,
+      res: Response,
+      next: NextFunction
+   ) {
+      try {
+         const { data } = req.body;
+         const newCategories = await category.import(data);
+
+         return myResponse(
+            res,
+            true,
+            "imort category successful",
+            200,
+            newCategories
+         );
+      } catch (error) {
          next(error);
       }
    }

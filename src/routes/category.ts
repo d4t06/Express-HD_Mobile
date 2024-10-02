@@ -14,4 +14,6 @@ router.post("/", categoryHandler.add);
 router.put("/:id", categoryHandler.update);
 router.delete("/:id", categoryHandler.delete);
 
+router.post("/import", categoryHandler.import);
+
 export default router;

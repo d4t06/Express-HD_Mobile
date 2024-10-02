@@ -12,8 +12,6 @@ import {
    Variant,
 } from "../models";
 import { generateId } from "../system/helper";
-import myResponse from "../system/myResponse";
-import image from "./image";
 
 import ImageService from "./image";
 
@@ -31,6 +29,8 @@ type JsonProduct = {
 
 class ProductManagementService {
    async jsonImporter(jsonProduct: JsonProduct) {
+      const start = Date.now();
+
       const foundedProduct = await Product.findOne({
          where: {
             name_ascii: generateId(jsonProduct.name),
@@ -74,39 +74,39 @@ class ProductManagementService {
       }));
       const newVariants = await Variant.bulkCreate(variantSchemas);
 
-      if (jsonProduct.image.length) {
-         /** create slider */
+      /** slider images */
+      const newImages = await Promise.all(
+         jsonProduct.sliders.map((url) => ImageService.upload(url))
+      );
+
+      for (let index = 0; index < newColors.length; index++) {
+         const newColor = newColors[index];
+
          const newSlider = await Slider.create({
-            name: newProduct.id + newColors[0].name_ascii,
+            name: newProduct.id + newColor.name_ascii,
          });
 
-         // slider images
-         const sliderImageSchemas = [];
-
-         let counter = 0;
-         const newImages = await Promise.all(jsonProduct.sliders.map(url => ImageService.upload(url)))
-
-         for (const image of newImages) {
-            if (counter > 3) break;
-
-            const schema = {
-               image_id: image.id,
-               link_to: "",
-               slider_id: newSlider.id,
-            };
-
-            sliderImageSchemas.push(schema);
-            counter++;
-         }
-
-         await SliderImage.bulkCreate(sliderImageSchemas);
-
-         // product slider
          await ProductSlider.create({
-            color_id: newColors[0].id,
+            color_id: newColor.id,
             product_id: newProduct.id,
             slider_id: newSlider.id,
          });
+
+         if (index === 0) {
+            const sliderImageSchemas = [];
+
+            for (const image of newImages) {
+               const schema = {
+                  image_id: image.id,
+                  link_to: "",
+                  slider_id: newSlider.id,
+               };
+
+               sliderImageSchemas.push(schema);
+            }
+
+            await SliderImage.bulkCreate(sliderImageSchemas);
+         }
       }
 
       /** attributes */
@@ -145,6 +145,12 @@ class ProductManagementService {
          variant_id: newVariants[0].id,
          combine_id: newCombines[0].id,
       });
+
+      console.log(
+         ">>> Import product successful ",
+         newProduct.name,
+         (Date.now() - start) / 1000 + "s"
+      );
 
       return newProduct;
    }

@@ -17,7 +17,7 @@ class CategoryAttribute extends Model<
    declare id: CreationOptional<number>;
    declare category_id: ForeignKey<number>;
    declare name: string;
-   declare name_ascii: number;
+   declare name_ascii: string;
 }
 
 CategoryAttribute.init(
