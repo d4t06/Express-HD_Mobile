@@ -6,6 +6,7 @@ import Image from "../models/image";
 import CloudinaryService from "../services/cloudinary";
 
 import cloudinary from "cloudinary";
+import { generateId } from "../system/helper";
 
 const PAGE_SIZE = 6;
 
@@ -21,7 +22,8 @@ class priceRangeHandler {
          const { page, size } = req.query;
 
          const _size =
-            (size && typeof size === "string" && +size < 50 && +size) || PAGE_SIZE;
+            (size && typeof size === "string" && +size < 50 && +size) ||
+            PAGE_SIZE;
          const _page = (page && typeof page === "string" && +page) || 1;
 
          const { rows, count } = await Image.findAndCountAll({
@@ -51,7 +53,16 @@ class priceRangeHandler {
          const b64 = Buffer.from(buffer).toString("base64");
          let dataURI = "data:" + mimetype + ";base64," + b64;
 
-         const newImage = await CloudinaryService.upload(dataURI);
+         const imageRes = await CloudinaryService.upload(dataURI);
+         const imageInfo = {
+            name: generateId(file.originalname),
+            public_id: imageRes.public_id,
+            image_url: imageRes.secure_url,
+            size: Math.ceil(imageRes.bytes / 1024),
+         };
+
+         const newImage = await Image.create(imageInfo);
+
 
          return myResponse(res, true, "Upload image successful", 200, newImage);
       } catch (error) {
@@ -68,7 +79,14 @@ class priceRangeHandler {
          const { imageUrl } = req.params;
          if (!imageUrl) throw new BadRequest("");
 
-         const imageInfo = await CloudinaryService.upload(imageUrl);
+         const imageRes = await CloudinaryService.upload(imageUrl);
+
+         const imageInfo = {
+            name: Date.now() + "",
+            public_id: imageRes.public_id,
+            image_url: imageRes.secure_url,
+            size: Math.ceil(imageRes.bytes / 1024),
+         };
 
          const newImage = await Image.create(imageInfo);
 
@@ -78,7 +96,11 @@ class priceRangeHandler {
       }
    }
 
-   async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+   async delete(
+      req: Request<{ id: string }>,
+      res: Response,
+      next: NextFunction
+   ) {
       try {
          const { id } = req.params;
 

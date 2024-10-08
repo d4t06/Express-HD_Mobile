@@ -1,5 +1,4 @@
 import cloudinary from "cloudinary";
-import { generateId } from "../system/helper";
 
 cloudinary.v2.config({
    cloud_name: process.env.CLOUD_NAME,
@@ -14,14 +13,7 @@ class ImageService {
          folder: "test",
       });
 
-      const imageInfo = {
-         name: generateId(res.original_filename),
-         public_id: res.public_id,
-         image_url: res.url,
-         size: Math.ceil(res.bytes / 1024),
-      };
-
-      return imageInfo;
+      return res;
    }
 
    async delete(publicId: string) {

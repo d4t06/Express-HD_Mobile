@@ -85,7 +85,14 @@ class ProductManagementService {
          ...jsonProduct.sliders.map((url) => CloudinaryService.upload(url)),
       ]);
 
-      const newImages = await Image.bulkCreate(imageRes);
+      const imageSchemas = imageRes.map((res) => ({
+         name: Date.now() + "",
+         public_id: res.public_id,
+         image_url: res.secure_url,
+         size: Math.ceil(res.bytes / 1024),
+      }));
+
+      const newImages = await Image.bulkCreate(imageSchemas);
 
       const [productImage, ...restImages] = newImages;
 
@@ -235,13 +242,12 @@ class ProductManagementService {
          });
 
          // slider images
-         const sliderImageSchemas = color.product_slider.slider.slider_images.map(
-            (sI) => ({
+         const sliderImageSchemas =
+            color.product_slider.slider.slider_images.map((sI) => ({
                image_id: sI.image_id,
                link_to: sI.link_to,
                slider_id: newSlider.id,
-            })
-         );
+            }));
 
          await SliderImage.bulkCreate(sliderImageSchemas);
 
@@ -304,13 +310,17 @@ class ProductManagementService {
          );
 
          // get old combine id
-         const oldColorIdIndex = colorIdList.findIndex((i) => i === oldCombine?.color_id);
+         const oldColorIdIndex = colorIdList.findIndex(
+            (i) => i === oldCombine?.color_id
+         );
 
          const newCombineIndex = newCombines.findIndex(
             (c) =>
                c.variant_id === newVariants[i].id &&
                c.color_id ===
-                  (!!newColors[oldColorIdIndex] ? newColors[oldColorIdIndex].id : null)
+                  (!!newColors[oldColorIdIndex]
+                     ? newColors[oldColorIdIndex].id
+                     : null)
          );
 
          // must create
