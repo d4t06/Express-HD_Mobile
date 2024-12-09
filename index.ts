@@ -15,7 +15,7 @@ app.use(cookiesParser());
 app.use(
    cors({
       credentials: true,
-      origin: ["http://localhost:5173", "http://localhost:4200", "https://d4t06.github.io"],
+      origin: process.env.CORS_WHITE_LIST?.split(", "),
    })
 );
 
@@ -27,6 +27,7 @@ app.listen(port, () => {
    console.log(
       `[server]: Server is running at http://localhost:${port}, ${process.env.NODE_ENV}`
    );
+   console.log(process.env.CORS_WHITE_LIST?.split(", "));
 });
 
 connectDB();

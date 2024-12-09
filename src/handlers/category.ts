@@ -77,13 +77,16 @@ class categoryHandler {
 
          const founded = await Category.findOne({
             where: {
-               name_ascii: generateId(body.name_ascii),
+               name_ascii: generateId(body.name),
             },
          });
 
          if (founded) return myResponse(res, false, "Category already exist", 409);
 
-         const category = await Category.create(body);
+         const category = await Category.create({
+            ...body,
+            name_ascii: generateId(body.name),
+         });
 
          // create slider
          const slider = await Slider.create({
