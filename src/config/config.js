@@ -4,7 +4,7 @@ module.exports = {
    development: {
       username: "root",
       password: "",
-      database: "hd-mobile-ts",
+      database: "hd-mobile",
       host: "localhost",
       port: 3306,
       dialect: "mysql",

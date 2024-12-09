@@ -11,8 +11,11 @@ productManagementRouter.use(requireAuth, requireRole("ADMIN"));
 productManagementRouter.get(
    "/products",
    sortMiddleware,
-   ProductManagementHandler.findAll
+   ProductManagementHandler.findAll,
 );
+
+productManagementRouter.get("/search", ProductManagementHandler.search);
+
 productManagementRouter.get("/duplicate/:id", ProductManagementHandler.duplicate);
 
 productManagementRouter.post("/json-import", ProductManagementHandler.JSONImport);

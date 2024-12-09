@@ -13,18 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const myResponse_1 = __importDefault(require("../system/myResponse"));
-const jwt = require("jsonwebtoken");
 function requireRole(requireRole) {
     return function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const auth = req.headers.authorization;
-            if (!auth || !auth.startsWith("Bearer "))
-                return (0, myResponse_1.default)(res, false, "Unauthorized", 401);
-            const token = auth.split(" ")[1];
             try {
-                const decode = jwt.verify(token, "nguyenhuudat");
-                console.log("role middleware check: ", decode.role);
-                if (!decode.role.includes(requireRole))
+                console.log(">>> inside require role, ", res.locals.user);
+                if (!res.locals.user.role.includes(requireRole))
                     return (0, myResponse_1.default)(res, false, "Insufficient privilege or the access token provided is expired, revoked", 403);
                 next();
             }

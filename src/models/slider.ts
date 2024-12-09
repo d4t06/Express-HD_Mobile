@@ -35,11 +35,6 @@ Slider.init(
    }
 );
 
-// Slider.hasOne(CategorySlider, {
-//    onDelete: "CASCADE",
-//    foreignKey: "slider_id",
-// });
-
 CategorySlider.belongsTo(Slider, {
    onDelete: "CASCADE",
    foreignKey: "slider_id",

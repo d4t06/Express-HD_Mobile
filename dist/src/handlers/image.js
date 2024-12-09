@@ -16,10 +16,11 @@ const myResponse_1 = __importDefault(require("../system/myResponse"));
 const BadRequest_1 = __importDefault(require("../errors/BadRequest"));
 const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
 const image_1 = __importDefault(require("../models/image"));
-const cloudinary_1 = __importDefault(require("cloudinary"));
+const cloudinary_1 = __importDefault(require("../services/cloudinary"));
+const cloudinary_2 = __importDefault(require("cloudinary"));
 const helper_1 = require("../system/helper");
 const PAGE_SIZE = 6;
-cloudinary_1.default.v2.config({
+cloudinary_2.default.v2.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET,
@@ -29,7 +30,8 @@ class priceRangeHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { page, size } = req.query;
-                const _size = (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
+                const _size = (size && typeof size === "string" && +size < 50 && +size) ||
+                    PAGE_SIZE;
                 const _page = (page && typeof page === "string" && +page) || 1;
                 const { rows, count } = yield image_1.default.findAndCountAll({
                     offset: (+_page - 1) * _size,
@@ -48,27 +50,45 @@ class priceRangeHandler {
             }
         });
     }
-    add(req, res, next) {
+    uploadFile(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const file = req.file;
                 if (!file)
                     throw new BadRequest_1.default("");
-                const { buffer, mimetype, originalname, size } = file;
+                const { buffer, mimetype } = file;
                 const b64 = Buffer.from(buffer).toString("base64");
                 let dataURI = "data:" + mimetype + ";base64," + b64;
-                const imageUploadRes = yield cloudinary_1.default.v2.uploader.upload(dataURI, {
-                    resource_type: "auto",
-                    folder: "hd-mobile-test",
-                });
+                const imageRes = yield cloudinary_1.default.upload(dataURI);
                 const imageInfo = {
-                    name: (0, helper_1.generateId)(originalname),
-                    public_id: imageUploadRes.public_id,
-                    image_url: imageUploadRes.url,
-                    size: Math.ceil(size / 1000),
+                    name: (0, helper_1.generateId)(file.originalname),
+                    public_id: imageRes.public_id,
+                    image_url: imageRes.secure_url,
+                    size: Math.ceil(imageRes.bytes / 1024),
                 };
                 const newImage = yield image_1.default.create(imageInfo);
-                return (0, myResponse_1.default)(res, true, "add image successful", 200, newImage);
+                return (0, myResponse_1.default)(res, true, "Upload image successful", 200, newImage);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    uploadUrl(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { imageUrl } = req.params;
+                if (!imageUrl)
+                    throw new BadRequest_1.default("");
+                const imageRes = yield cloudinary_1.default.upload(imageUrl);
+                const imageInfo = {
+                    name: Date.now() + "",
+                    public_id: imageRes.public_id,
+                    image_url: imageRes.secure_url,
+                    size: Math.ceil(imageRes.bytes / 1024),
+                };
+                const newImage = yield image_1.default.create(imageInfo);
+                return (0, myResponse_1.default)(res, true, "Upload image successful", 200, newImage);
             }
             catch (error) {
                 next(error);
@@ -79,13 +99,16 @@ class priceRangeHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.params;
-                if (Number.isNaN(+id))
-                    throw new BadRequest_1.default("");
-                const item = yield image_1.default.findByPk(id);
+                const item = yield image_1.default.findOne({
+                    where: {
+                        public_id: id,
+                    },
+                });
                 if (!item)
                     throw new ObjectNotFound_1.default("");
-                item.destroy();
-                return (0, myResponse_1.default)(res, true, "delete price range successful", 200);
+                yield cloudinary_1.default.delete(id);
+                yield item.destroy();
+                return (0, myResponse_1.default)(res, true, "Delete image successful", 200);
             }
             catch (error) {
                 console.log(error);

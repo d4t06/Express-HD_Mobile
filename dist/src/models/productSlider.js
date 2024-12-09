@@ -30,4 +30,6 @@ ProductSlider.init({
     timestamps: false,
     tableName: "Product_Sliders",
 });
+// ProductSlider.belongsTo(Slider, {
+// })
 exports.default = ProductSlider;

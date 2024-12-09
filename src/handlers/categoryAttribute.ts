@@ -4,6 +4,7 @@ import BadRequest from "../errors/BadRequest";
 import categoryAttribute from "../schemas/categoryAttribute";
 import ObjectNotFound from "../errors/ObjectNotFound";
 import CategoryAttribute from "../models/categoryAttribute";
+import { generateId } from "../system/helper";
 
 class categoryAttributeHandler {
    async add(req: Request, res: Response, next: NextFunction) {
@@ -15,7 +16,7 @@ class categoryAttributeHandler {
          if (value.error) throw new BadRequest(value.error.message);
          const founded = await CategoryAttribute.findOne({
             where: {
-               name_ascii: body.name_ascii,
+               name_ascii: generateId(body.name),
                category_id: body.category_id
             },
          });
@@ -28,7 +29,7 @@ class categoryAttributeHandler {
                409
             );
 
-         const brand = await CategoryAttribute.create(body);
+         const brand = await CategoryAttribute.create({...body, name_ascii: generateId(body.name)});
 
          return myResponse(
             res,

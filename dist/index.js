@@ -11,7 +11,7 @@ const conectDB_1 = __importDefault(require("./conectDB"));
 const cookiesParser = require("cookie-parser");
 const cors = require("cors");
 const app = (0, express_1.default)();
-const port = process.env.PORT || 3000;
+const port = 3000 || 3000;
 app.use(express_1.default.json());
 app.use(cookiesParser());
 app.use(cors({

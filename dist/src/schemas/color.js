@@ -8,6 +8,6 @@ const colorSchema = joi_1.default.object({
     id: joi_1.default.number(),
     product_id: joi_1.default.number().required(),
     name: joi_1.default.string().required(),
-    name_ascii: joi_1.default.string().required(),
+    name_ascii: joi_1.default.string().empty(""),
 });
 exports.default = colorSchema;

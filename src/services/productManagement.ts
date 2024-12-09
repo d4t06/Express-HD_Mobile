@@ -7,7 +7,6 @@ import {
    DefaultVariantCombine,
    Description,
    Image,
-   Product,
    ProductAttribute,
    ProductSlider,
    Slider,
@@ -18,6 +17,7 @@ import { generateId, getProductName } from "../system/helper";
 
 import CloudinaryService from "./cloudinary";
 import ProductService from "./product";
+import Product from "../models/product";
 
 type JsonProduct = {
    name: string;

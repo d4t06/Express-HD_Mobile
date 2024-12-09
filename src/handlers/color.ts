@@ -3,6 +3,7 @@ import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
 import colorSchema from "../schemas/color";
 import ObjectNotFound from "../errors/ObjectNotFound";
+
 import Color from "../models/color";
 import ProductSlider from "../models/productSlider";
 import Slider from "../models/slider";
@@ -11,6 +12,8 @@ import Combine from "../models/combine";
 import SliderImage from "../models/sliderImage";
 import Image from "../models/image";
 
+import { generateId } from "../system/helper";
+
 class colorHandler {
    async add(req: Request, res: Response, next: NextFunction) {
       try {
@@ -18,7 +21,7 @@ class colorHandler {
          const value = colorSchema.validate(body);
 
          if (value.error) throw new BadRequest(value.error.message);
-         const color = await Color.create(body);
+         const color = await Color.create({ ...body, name_ascii: generateId(body.name) });
 
          // add slider
          const newSlider = await new Slider({

@@ -4,6 +4,10 @@ GET http://localhost:3000/api/categories
 ###
 GET http://localhost:3000/api/categories/less
 
+
+###
+GET http://localhost:5000/api/auth/refresh
+
 ###
 POST    http://localhost:3000/categories
 content-Type: application/json

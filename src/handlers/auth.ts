@@ -8,6 +8,9 @@ import myResponse from "../system/myResponse";
 import jwt from "jsonwebtoken";
 import ObjectNotFound from "../errors/ObjectNotFound";
 
+const ACCESS_TOKEN_EXPIRE = '1h'
+const REFRESH_TOKEN_EXPIRE = '5d'
+
 class AuthHandler {
    async login(
       req: Request<{}, {}, { username: string; password: string }>,
@@ -42,7 +45,7 @@ class AuthHandler {
             },
             process.env.JWT_SECRET!,
             {
-               expiresIn: "1d",
+               expiresIn: ACCESS_TOKEN_EXPIRE,
             }
          );
 
@@ -53,7 +56,7 @@ class AuthHandler {
             },
             process.env.JWT_SECRET!,
             {
-               expiresIn: "3d",
+               expiresIn: REFRESH_TOKEN_EXPIRE,
             }
          );
 
@@ -141,7 +144,7 @@ class AuthHandler {
             },
             "nguyenhuudat",
             {
-               expiresIn: "1d",
+               expiresIn: ACCESS_TOKEN_EXPIRE,
             }
          );
 

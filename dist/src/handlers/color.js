@@ -30,6 +30,7 @@ const variant_1 = __importDefault(require("../models/variant"));
 const combine_1 = __importDefault(require("../models/combine"));
 const sliderImage_1 = __importDefault(require("../models/sliderImage"));
 const image_1 = __importDefault(require("../models/image"));
+const helper_1 = require("../system/helper");
 class colorHandler {
     add(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -39,7 +40,7 @@ class colorHandler {
                 const value = color_1.default.validate(body);
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
-                const color = yield color_2.default.create(body);
+                const color = yield color_2.default.create(Object.assign(Object.assign({}, body), { name_ascii: (0, helper_1.generateId)(body.name) }));
                 // add slider
                 const newSlider = yield new slider_1.default({
                     name: `for ${color.product_id} ${color.name_ascii}`,

@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-// import ObjectNotFound from "../errors/ObjectNotFound";
+
 import Category from "../models/category";
 import Image from "../models/image";
+import Brand from "../models/brand";
+import Slider from "../models/slider";
+import CategorySlider from "../models/categorySlider";
+import SliderImage from "../models/sliderImage";
+
 import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
-import Brand from "../models/brand";
 import ObjectNotFound from "../errors/ObjectNotFound";
-import CategorySlider from "../models/categorySlider";
-import Slider from "../models/slider";
-import SliderImage from "../models/sliderImage";
 import categorySchema from "../schemas/category";
 import { generateId } from "../system/helper";
-import { CategoryAttribute } from "../models";
 import category from "../services/category";
 
 class categoryHandler {
@@ -56,10 +56,7 @@ class categoryHandler {
    async findAllLess(_req: Request, res: Response, next: NextFunction) {
       try {
          const categories = await Category.findAll({
-            include: [
-               Category.associations.brands,
-               Category.associations.attributes,
-            ],
+            include: [Category.associations.brands, Category.associations.attributes],
             where: {
                hidden: false,
             },
@@ -71,11 +68,7 @@ class categoryHandler {
       }
    }
 
-   async add(
-      req: Request<{}, {}, Category>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async add(req: Request<{}, {}, Category>, res: Response, next: NextFunction) {
       try {
          const body = req.body;
          const value = categorySchema.validate(body);
@@ -84,12 +77,11 @@ class categoryHandler {
 
          const founded = await Category.findOne({
             where: {
-               name_ascii: body.name_ascii,
+               name_ascii: generateId(body.name_ascii),
             },
          });
 
-         if (founded)
-            return myResponse(res, false, "Category already exist", 409);
+         if (founded) return myResponse(res, false, "Category already exist", 409);
 
          const category = await Category.create(body);
 
@@ -127,13 +119,7 @@ class categoryHandler {
             ],
          });
 
-         return myResponse(
-            res,
-            true,
-            "add category successful",
-            200,
-            newCategory
-         );
+         return myResponse(res, true, "add category successful", 200, newCategory);
       } catch (error) {
          console.log(error);
          next(error);
@@ -158,8 +144,7 @@ class categoryHandler {
             },
          });
 
-         if (founded)
-            return myResponse(res, false, "Category already exist", 409);
+         if (founded) return myResponse(res, false, "Category already exist", 409);
 
          const item = await Category.findByPk(id);
 
@@ -175,11 +160,7 @@ class categoryHandler {
       }
    }
 
-   async delete(
-      req: Request<{ id: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async delete(req: Request<{ id: string }>, res: Response, next: NextFunction) {
       try {
          const { id } = req.params;
          const category = await Category.findByPk(+id, {
@@ -193,8 +174,7 @@ class categoryHandler {
          });
          if (!category) throw new ObjectNotFound("");
 
-         if (category.category_slider)
-            await category.category_slider.slider.destroy();
+         if (category.category_slider) await category.category_slider.slider.destroy();
 
          await category.destroy();
 
@@ -205,22 +185,12 @@ class categoryHandler {
       }
    }
 
-   async import(
-      req: Request<{}, {}, { data: any }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async import(req: Request<{}, {}, { data: any }>, res: Response, next: NextFunction) {
       try {
          const { data } = req.body;
          const newCategories = await category.import(data);
 
-         return myResponse(
-            res,
-            true,
-            "imort category successful",
-            200,
-            newCategories
-         );
+         return myResponse(res, true, "imort category successful", 200, newCategories);
       } catch (error) {
          next(error);
       }

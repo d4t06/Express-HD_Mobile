@@ -10,7 +10,7 @@ class ImageService {
    async upload(data: string) {
       const res = await cloudinary.v2.uploader.upload(data, {
          resource_type: "auto",
-         folder: "test",
+         folder: process.env.NODE_ENV === "development" ? "test" : "hd-mobile",
       });
 
       return res;

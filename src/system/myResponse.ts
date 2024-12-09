@@ -7,5 +7,5 @@ export default function myResponse(
    code: number,
    data?: any
 ) {
-   return res.status(code).json({ flag, message, code, time: "", data: data || null });
+   return res.status(code).json({ flag, message, code, time: new Date().toLocaleString(), data: data || null });
 }

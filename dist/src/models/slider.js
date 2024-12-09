@@ -23,10 +23,6 @@ Slider.init({
     sequelize: sequelize_2.default,
     timestamps: false,
 });
-// Slider.hasOne(CategorySlider, {
-//    onDelete: "CASCADE",
-//    foreignKey: "slider_id",
-// });
 categorySlider_1.default.belongsTo(Slider, {
     onDelete: "CASCADE",
     foreignKey: "slider_id",

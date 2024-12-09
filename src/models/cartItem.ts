@@ -1,14 +1,12 @@
 import {
    CreationOptional,
    DataTypes,
-   ForeignKey,
    InferAttributes,
    InferCreationAttributes,
    Model,
 } from "sequelize";
 
 import sequelize from "../config/sequelize";
-import { Product } from ".";
 
 class CartItem extends Model<
    InferAttributes<CartItem>,

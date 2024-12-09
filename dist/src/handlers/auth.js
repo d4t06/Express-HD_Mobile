@@ -19,6 +19,8 @@ const myResponse_1 = __importDefault(require("../system/myResponse"));
 // import bcrypt from "bcrypt";
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
+const ACCESS_TOKEN_EXPIRE = '1h';
+const REFRESH_TOKEN_EXPIRE = '5d';
 class AuthHandler {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -42,13 +44,13 @@ class AuthHandler {
                     username: user.username,
                     role: user.role,
                 }, process.env.JWT_SECRET, {
-                    expiresIn: "1d",
+                    expiresIn: ACCESS_TOKEN_EXPIRE,
                 });
                 const refreshToken = jsonwebtoken_1.default.sign({
                     username: user.username,
                     role: user.role,
                 }, process.env.JWT_SECRET, {
-                    expiresIn: "3d",
+                    expiresIn: REFRESH_TOKEN_EXPIRE,
                 });
                 res.cookie("jwt", refreshToken, {
                     httpOnly: true,
@@ -124,7 +126,7 @@ class AuthHandler {
                     username: decode.username,
                     role: decode.role,
                 }, "nguyenhuudat", {
-                    expiresIn: "1d",
+                    expiresIn: ACCESS_TOKEN_EXPIRE,
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {

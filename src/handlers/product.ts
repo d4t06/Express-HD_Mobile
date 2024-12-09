@@ -3,22 +3,34 @@ import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
 import productSchema from "../schemas/product";
 import ObjectNotFound from "../errors/ObjectNotFound";
-import Product from "../models/product";
+
 import Description from "../models/description";
 import DefaultProductVariant from "../models/defaultProductVariant";
 import Variant from "../models/variant";
 import DefaultVariantCombine from "../models/defaultVariantCombine";
-import Category from "../models/category";
-import CategoryAttribute from "../models/categoryAttribute";
-import Color from "../models/color";
 import ProductSlider from "../models/productSlider";
-import Slider from "../models/slider";
-import Image from "../models/image";
-import SliderImage from "../models/sliderImage";
 import Combine from "../models/combine";
+
+// import {
+//    Description,
+//    DefaultProductVariant,
+//    Variant,
+//    DefaultVariantCombine,
+//    Category,
+//    CategoryAttribute,
+//    Color,
+//    ProductSlider,
+//    Slider,
+//    Image,
+//    SliderImage,
+//    Combine,
+// } from "../models";
+
+import ProductService from "../services/product";
 import { Filterable, FindOptions, InferAttributes, Op } from "sequelize";
 import { Sort } from "../types/type";
 import { generateId } from "../system/helper";
+import Product from "../models/product";
 
 const PAGE_SIZE = 6;
 
@@ -31,30 +43,23 @@ interface Query {
 }
 
 class ProductHandler {
-   async findAll(
-      req: Request<{}, {}, {}, Query>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async findAll(req: Request<{}, {}, {}, Query>, res: Response, next: NextFunction) {
       try {
          const query = req.query;
          const { page, brand_id, category_id, price, size } = query;
          const sort = res.locals.sort as Sort;
 
          const _size =
-            (size && typeof size === "string" && +size < 12 && +size) ||
-            PAGE_SIZE;
+            (size && typeof size === "string" && +size < 12 && +size) || PAGE_SIZE;
          const _page = (page && typeof page === "string" && +page) || 1;
 
-         const where: Filterable<
-            InferAttributes<Product, { omit: never }>
-         >["where"] = {};
+         const where: Filterable<InferAttributes<Product, { omit: never }>>["where"] = {};
          const combineWhere: Filterable<
             InferAttributes<Combine, { omit: never }>
          >["where"] = {};
-         const order: FindOptions<
-            InferAttributes<Product, { omit: never }>
-         >["order"] = [["id", "DESC"]];
+         const order: FindOptions<InferAttributes<Product, { omit: never }>>["order"] = [
+            ["id", "DESC"],
+         ];
 
          if (category_id) where.category_id = category_id;
 
@@ -178,72 +183,17 @@ class ProductHandler {
       }
    }
 
-   async findOne(
-      req: Request<{ productId: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async findOne(req: Request<{ productId: string }>, res: Response, next: NextFunction) {
       try {
          const { productId } = req.params;
 
-         const product = await Product.findByPk(productId, {
-            include: [
-               {
-                  model: Category,
-                  as: "category",
-                  include: [
-                     {
-                        model: CategoryAttribute,
-                        as: "attributes",
-                     },
-                  ],
-               },
-               {
-                  model: Variant,
-                  as: "variants",
-                  include: [
-                     {
-                        model: DefaultVariantCombine,
-                        as: "default_combine",
-                     },
-                  ],
-               },
-               Product.associations.default_variant,
-               Product.associations.combines,
-               {
-                  model: Color,
-                  as: "colors",
-                  include: [
-                     {
-                        model: ProductSlider,
-                        as: "product_slider",
-                        include: [
-                           {
-                              model: Slider,
-                              as: "slider",
-                              include: [
-                                 {
-                                    model: SliderImage,
-                                    as: "slider_images",
-                                    include: [
-                                       {
-                                          model: Image,
-                                          as: "image",
-                                       },
-                                    ],
-                                 },
-                              ],
-                           },
-                        ],
-                     },
-                  ],
-               },
-               Product.associations.attributes,
-               Product.associations.description,
-            ],
-         });
+         if (!productId || isNaN(+productId)) throw new BadRequest("");
 
-         return myResponse(res, true, "get product successful", 200, product);
+         const product = await ProductService.findOne(+productId);
+
+         if (product === null) return myResponse(res, false, "Product not found", 404);
+
+         return myResponse(res, true, "Get product successful", 200, product);
       } catch (error) {
          next(error);
       }
@@ -256,18 +206,19 @@ class ProductHandler {
 
          // check
          if (value.error) throw new BadRequest(value.error.message);
-         if (!body.category_id || !body.brand_id) throw new BadRequest("");
 
          const founded = await Product.findOne({
             where: {
-               name_ascii: body.name_ascii,
+               name_ascii: generateId(body.name),
             },
          });
 
-         if (founded)
-            return myResponse(res, false, "Product name already exist", 409);
+         if (founded) return myResponse(res, false, "Product name already exist", 409);
 
-         const newProduct = await Product.create(body);
+         const newProduct = await Product.create({
+            ...body,
+            name_ascii: generateId(body.name),
+         });
 
          await new Description({
             content: newProduct.name,
@@ -278,23 +229,13 @@ class ProductHandler {
             product_id: newProduct.id,
          }).save();
 
-         return myResponse(
-            res,
-            true,
-            "add product successful",
-            200,
-            newProduct
-         );
+         return myResponse(res, true, "add product successful", 200, newProduct);
       } catch (error) {
          next(error);
       }
    }
 
-   async update(
-      req: Request<{ productId: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async update(req: Request<{ productId: string }>, res: Response, next: NextFunction) {
       try {
          const { productId } = req.params;
          const body = req.body;
@@ -305,8 +246,7 @@ class ProductHandler {
 
          if (foundedProduct.name_ascii !== generateId(body.name)) {
             const exist = await Product.findByPk(productId);
-            if (exist)
-               return myResponse(res, false, "Product name already exist", 409);
+            if (exist) return myResponse(res, false, "Product name already exist", 409);
          }
 
          await foundedProduct.update(body);
@@ -400,7 +340,7 @@ class ProductHandler {
             },
          ],
          where: {
-            name_ascii: { [Op.like]: `${generateId(q)}%` },
+            name_ascii: { [Op.like]: `%${generateId(q)}%` },
          },
       });
 
@@ -415,11 +355,7 @@ class ProductHandler {
       });
    }
 
-   async delete(
-      req: Request<{ productId: string }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async delete(req: Request<{ productId: string }>, res: Response, next: NextFunction) {
       try {
          const { productId } = req.params;
 

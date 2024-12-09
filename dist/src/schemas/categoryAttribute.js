@@ -7,7 +7,7 @@ const joi_1 = __importDefault(require("joi"));
 const categoryAttributeSchema = joi_1.default.object({
     id: joi_1.default.number(),
     name: joi_1.default.string().required(),
-    name_ascii: joi_1.default.string().required(),
+    name_ascii: joi_1.default.string().empty(""),
     category_id: joi_1.default.number().required(),
 });
 exports.default = categoryAttributeSchema;

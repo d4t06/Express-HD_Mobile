@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import myResponse from "../system/myResponse";
 import BadRequest from "../errors/BadRequest";
-import Brand from "../models/brand";
 import brandSchema from "../schemas/brand";
 import ObjectNotFound from "../errors/ObjectNotFound";
+import Brand from "../models/brand"
+
+import { generateId } from "../system/helper";
 
 class BrandHandler {
    async add(req: Request, res: Response, next: NextFunction) {
@@ -12,16 +14,18 @@ class BrandHandler {
          const value = brandSchema.validate(body);
 
          if (value.error) throw new BadRequest(value.error.message);
+
          const founded = await Brand.findOne({
             where: {
-               name_ascii: body.name_ascii,
+               name_ascii: generateId(body.name),
+               category_id: body.category_id,
             },
          });
 
          if (founded)
-            return myResponse(res, false, "Category already exist", 409);
+            return myResponse(res, false, "Brand already exist", 409);
 
-         const brand = await Brand.create(body);
+         const brand = await Brand.create({ ...body, name_ascii: generateId(body.name) });
 
          return myResponse(res, true, "add brand successful", 200, brand);
       } catch (error) {
@@ -29,11 +33,7 @@ class BrandHandler {
       }
    }
 
-   async update(
-      req: Request<{ id: number }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async update(req: Request<{ id: number }>, res: Response, next: NextFunction) {
       try {
          const { id } = req.params;
          const body = req.body;
@@ -47,8 +47,7 @@ class BrandHandler {
             },
          });
 
-         if (founded)
-            return myResponse(res, false, "Category already exist", 409);
+         if (founded) return myResponse(res, false, "Category already exist", 409);
 
          const oldBrand = await Brand.findByPk(id);
          if (!oldBrand) throw new ObjectNotFound("");
@@ -64,11 +63,7 @@ class BrandHandler {
       }
    }
 
-   async delete(
-      req: Request<{ id: number }>,
-      res: Response,
-      next: NextFunction
-   ) {
+   async delete(req: Request<{ id: number }>, res: Response, next: NextFunction) {
       try {
          const { id } = req.params;
 

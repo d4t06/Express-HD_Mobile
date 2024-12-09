@@ -1,13 +1,15 @@
-import Category from "../models/category";
-import CategoryAttribute from "../models/categoryAttribute";
-import Color from "../models/color";
-import DefaultVariantCombine from "../models/defaultVariantCombine";
-import Image from "../models/image";
+import {
+   Category,
+   CategoryAttribute,
+   Color,
+   DefaultVariantCombine,
+   Image,
+   ProductSlider,
+   Slider,
+   SliderImage,
+   Variant,
+} from "../models";
 import Product from "../models/product";
-import ProductSlider from "../models/productSlider";
-import Slider from "../models/slider";
-import SliderImage from "../models/sliderImage";
-import Variant from "../models/variant";
 
 class ProductService {
    async findOne(id: number) {
