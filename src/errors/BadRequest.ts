@@ -1,6 +1,6 @@
 class BadRequest extends Error {
    constructor(message: string) {
-      super(message || "bad request");
+      super(message || "Bad request");
    }
 }
 

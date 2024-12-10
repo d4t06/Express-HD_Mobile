@@ -9,7 +9,6 @@ const productRouter = Router();
 productRouter.get("/search", sortMiddleware, productHandler.search);
 productRouter.get("/:productId", productHandler.findOne);
 
-// productRouter.use();
 productRouter.get("/", sortMiddleware, productHandler.findAll);
 
 productRouter.use(requireAuth, requireRole("ADMIN"));

@@ -7,6 +7,7 @@ import Slider from "../models/slider";
 import CategorySlider from "../models/categorySlider";
 import myResponse from "../system/myResponse";
 import userSchema from "../schemas/user";
+import Forbiden from "../errors/Forbiden";
 
 class InitController {
    async init(req: Request, res: Response, next: NextFunction) {
@@ -17,11 +18,19 @@ class InitController {
 
          if (result.error) throw new BadRequest(result.error.message);
 
+         const founded = await User.findOne({
+            where: {
+               username: "admin",
+            },
+         });
+
+         if (founded) throw new Forbiden("");
+
          // const salt = await bcrypt.genSalt(10);
          // const hashPassword = await bcrypt.hash(user.password, salt);
          await User.create({
             password: user.password,
-            username: user.username,
+            username: "admin",
             role: "ADMIN",
          });
 

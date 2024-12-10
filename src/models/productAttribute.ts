@@ -36,14 +36,14 @@ ProductAttribute.init(
       },
       value: {
          allowNull: false,
-         type: DataTypes.STRING,
+         type: DataTypes.TEXT,
       },
    },
    {
       sequelize,
       timestamps: false,
       tableName: "Product_Attributes",
-   }
+   },
 );
 
 export default ProductAttribute;

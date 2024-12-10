@@ -76,8 +76,6 @@ class ProductManagementService {
       }));
       const newVariants = await Variant.bulkCreate(variantSchemas);
 
-      // /** upload product image */
-      // const newProductImage = await CloudinaryService.upload(jsonProduct.image);
 
       /** slider images */
       const imageRes = await Promise.all([

@@ -8,7 +8,7 @@ export default function requireRole(requireRole: "ADMIN" | "") {
       next: NextFunction
    ) {
       try {
-         console.log(">>> inside require role, ", res.locals.user);
+         // console.log(">>> inside require role, ", res.locals.user);
 
          if (!res.locals.user.role.includes(requireRole))
             return myResponse(

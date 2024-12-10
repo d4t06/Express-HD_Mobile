@@ -4,6 +4,7 @@ import BadRequest from "../errors/BadRequest";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import AccessDenied from "../errors/AccesDenie";
 import myResponse from "../system/myResponse";
+import Forbiden from "../errors/Forbiden";
 
 export default function errorHandler(
    error: Error,
@@ -19,6 +20,10 @@ export default function errorHandler(
       return myResponse(res, false, error.message, 401);
 
    if (error instanceof AccessDenied) return myResponse(res, false, error.message, 403);
+
+   if (error instanceof Forbiden) return myResponse(res, false, error.message, 403);
+
+   console.log(error.message)
 
    return myResponse(res, false, error.message, 500);
 }

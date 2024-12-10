@@ -1,3 +1,4 @@
+import Forbiden from "../errors/Forbiden";
 import {
    Brand,
    Category,
@@ -62,6 +63,8 @@ class CategoryService {
    async import(categories: JsonCategory[]) {
       const newCategories: Category[] = [];
 
+       // throw new Forbiden("");
+
       for (const c of categories) {
          const foundedCategory = await Category.findOne({
             where: {
@@ -102,7 +105,7 @@ class CategoryService {
 
          await Brand.bulkCreate(brandSchemas);
 
-         /** brands */
+         /** attributes */
          const attributeSchemas = c.attributes.map(
             (a) =>
                ({

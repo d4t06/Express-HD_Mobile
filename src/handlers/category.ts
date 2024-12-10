@@ -12,7 +12,8 @@ import BadRequest from "../errors/BadRequest";
 import ObjectNotFound from "../errors/ObjectNotFound";
 import categorySchema from "../schemas/category";
 import { generateId } from "../system/helper";
-import category from "../services/category";
+import categoryService from "../services/category";
+import { CategoryAttribute } from "../models";
 
 class categoryHandler {
    async findAll(_req: Request, res: Response, next: NextFunction) {
@@ -56,7 +57,19 @@ class categoryHandler {
    async findAllLess(_req: Request, res: Response, next: NextFunction) {
       try {
          const categories = await Category.findAll({
-            include: [Category.associations.brands, Category.associations.attributes],
+            include: [
+               {
+                  model: Brand,
+                  as: "brands",
+                  attributes: ["name_ascii", "id"],
+               },
+               {
+                  model: CategoryAttribute,
+                  as: "attributes",
+                  attributes: ["name_ascii", "id"],
+               },
+            ],
+            attributes: ["name_ascii", "id"],
             where: {
                hidden: false,
             },
@@ -132,7 +145,7 @@ class categoryHandler {
    async update(
       req: Request<{ id: number }, {}, Category>,
       res: Response,
-      next: NextFunction
+      next: NextFunction,
    ) {
       try {
          const body = req.body;
@@ -191,9 +204,9 @@ class categoryHandler {
    async import(req: Request<{}, {}, { data: any }>, res: Response, next: NextFunction) {
       try {
          const { data } = req.body;
-         const newCategories = await category.import(data);
+         const newCategories = await categoryService.import(data);
 
-         return myResponse(res, true, "imort category successful", 200, newCategories);
+         return myResponse(res, true, "Import category successful", 200, newCategories);
       } catch (error) {
          next(error);
       }

@@ -31,7 +31,7 @@ module.exports = {
             },
             value: {
                allowNull: false,
-               type: Sequelize.STRING,
+               type: Sequelize.TEXT,
             },
          },
          {

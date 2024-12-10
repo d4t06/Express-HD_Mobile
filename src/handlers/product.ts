@@ -27,7 +27,7 @@ import Combine from "../models/combine";
 // } from "../models";
 
 import ProductService from "../services/product";
-import { Filterable, FindOptions, InferAttributes, Op } from "sequelize";
+import { Filterable, FindOptions, InferAttributes, Op, Sequelize } from "sequelize";
 import { Sort } from "../types/type";
 import { generateId } from "../system/helper";
 import Product from "../models/product";
@@ -57,7 +57,7 @@ class ProductHandler {
          const combineWhere: Filterable<
             InferAttributes<Combine, { omit: never }>
          >["where"] = {};
-         const order: FindOptions<InferAttributes<Product, { omit: never }>>["order"] = [
+         let order: FindOptions<InferAttributes<Product, { omit: never }>>["order"] = [
             ["id", "DESC"],
          ];
 
@@ -102,14 +102,23 @@ class ProductHandler {
             // }
 
             if (sort.column === "price") {
-               order.push([
-                  "default_variant",
-                  "variant",
-                  "default_combine",
-                  "combine",
-                  sort.column,
-                  sort.type,
-               ]);
+               // order.push([
+               //    "default_variant",
+               //    "variant",
+               //    "default_combine",
+               //    "combine",
+               //    sort.column,
+               //    sort.type,
+               // ]);
+
+               order = [
+                  [
+                     Sequelize.literal(
+                        "`default_variant.variant.default_combine.combine.price`",
+                     ),
+                     sort.type,
+                  ],
+               ];
             }
          }
 
@@ -262,7 +271,7 @@ class ProductHandler {
    async search(
       req: Request<{}, {}, {}, { q: string; page: string; size: string }>,
       res: Response,
-      next: NextFunction
+      next: NextFunction,
    ) {
       const { q, page, size } = req.query;
 
