@@ -60,6 +60,7 @@ class ProductManagementService {
       }).save();
 
       /** color */
+      console.log((Date.now() - start) / 1000 + "s", ">>> Save colors: ");
       const colorSchemas = jsonProduct.colors.map((c) => ({
          name: c,
          name_ascii: generateId(c),
@@ -69,6 +70,7 @@ class ProductManagementService {
       const newColors = await Color.bulkCreate(colorSchemas);
 
       /** variant */
+      console.log((Date.now() - start) / 1000 + "s", ">>> Save variant: ");
       const variantSchemas = jsonProduct.variants.map((v) => ({
          product_id: newProduct.id,
          name: v,
@@ -76,12 +78,15 @@ class ProductManagementService {
       }));
       const newVariants = await Variant.bulkCreate(variantSchemas);
 
+      console.log((Date.now() - start) / 1000 + "s", ">>> Upload image: ");
 
       /** slider images */
       const imageRes = await Promise.all([
          CloudinaryService.upload(jsonProduct.image),
          ...jsonProduct.sliders.map((url) => CloudinaryService.upload(url)),
       ]);
+
+      console.log((Date.now() - start) / 1000 + "s", ">>> Save image: ");
 
       const imageSchemas = imageRes.map((res) => ({
          name: Date.now() + "",
@@ -94,7 +99,11 @@ class ProductManagementService {
 
       const [productImage, ...restImages] = newImages;
 
+      console.log((Date.now() - start) / 1000 + "s", ">>> Update product image: ");
+
       await newProduct.set("image_url", productImage.image_url).save();
+
+      console.log((Date.now() - start) / 1000 + "s", ">>> Save slider: ");
 
       for (let index = 0; index < newColors.length; index++) {
          const newColor = newColors[index];
@@ -166,7 +175,7 @@ class ProductManagementService {
       console.log(
          ">>> Import product successful ",
          newProduct.name,
-         (Date.now() - start) / 1000 + "s"
+         (Date.now() - start) / 1000 + "s",
       );
 
       return newProduct;
@@ -184,7 +193,7 @@ class ProductManagementService {
 
       const newProductName = getProductName(
          otherProductNames.map((p) => p.name),
-         foundedProduct.name
+         foundedProduct.name,
       );
 
       const newProduct = await new Product({
@@ -240,12 +249,13 @@ class ProductManagementService {
          });
 
          // slider images
-         const sliderImageSchemas =
-            color.product_slider.slider.slider_images.map((sI) => ({
+         const sliderImageSchemas = color.product_slider.slider.slider_images.map(
+            (sI) => ({
                image_id: sI.image_id,
                link_to: sI.link_to,
                slider_id: newSlider.id,
-            }));
+            }),
+         );
 
          await SliderImage.bulkCreate(sliderImageSchemas);
 
@@ -267,7 +277,7 @@ class ProductManagementService {
             const oldVariantId = variantIdList[j];
 
             const foundedCombine = foundedProduct.combines.find(
-               (c) => c.color_id === oldColorId && c.variant_id === oldVariantId
+               (c) => c.color_id === oldColorId && c.variant_id === oldVariantId,
             );
             if (!foundedCombine) continue;
 
@@ -290,7 +300,7 @@ class ProductManagementService {
       if (foundedProduct.default_variant?.variant_id) {
          const indexInList = variantIdList.findIndex(
             // @ts-ignore
-            (i) => i === foundedProduct.default_variant.variant_id
+            (i) => i === foundedProduct.default_variant.variant_id,
          );
 
          await DefaultProductVariant.create({
@@ -304,21 +314,17 @@ class ProductManagementService {
          const oldVariant = foundedProduct.variants[i];
 
          const oldCombine = foundedProduct.combines.find(
-            (c) => c.id === oldVariant.default_combine.combine_id
+            (c) => c.id === oldVariant.default_combine.combine_id,
          );
 
          // get old combine id
-         const oldColorIdIndex = colorIdList.findIndex(
-            (i) => i === oldCombine?.color_id
-         );
+         const oldColorIdIndex = colorIdList.findIndex((i) => i === oldCombine?.color_id);
 
          const newCombineIndex = newCombines.findIndex(
             (c) =>
                c.variant_id === newVariants[i].id &&
                c.color_id ===
-                  (!!newColors[oldColorIdIndex]
-                     ? newColors[oldColorIdIndex].id
-                     : null)
+                  (!!newColors[oldColorIdIndex] ? newColors[oldColorIdIndex].id : null),
          );
 
          // must create
