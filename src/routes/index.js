@@ -20,9 +20,16 @@ const defaultProductVariant_1 = __importDefault(require("./defaultProductVariant
 const auth_1 = __importDefault(require("./auth"));
 const image_1 = __importDefault(require("./image"));
 const init_1 = __importDefault(require("./init"));
+const cartItem_1 = __importDefault(require("./cartItem"));
+const productManagement_1 = __importDefault(require("./productManagement"));
+const rating_1 = __importDefault(require("./rating"));
+const ratingManagement_1 = __importDefault(require("./ratingManagement"));
+const pdf_1 = __importDefault(require("./pdf"));
 function routeHandler(app) {
     app.use("/api/init", init_1.default);
+    app.use("/api/pdf", pdf_1.default);
     app.use("/api/auth", auth_1.default);
+    app.use("/api/cart-items", cartItem_1.default);
     app.use("/api/images", image_1.default);
     app.use("/api/categories", category_1.default);
     app.use("/api/category-brands", brand_1.default);
@@ -30,6 +37,7 @@ function routeHandler(app) {
     app.use("/api/category-price-ranges", priceRange_1.default);
     app.use("/api/slider-images", sliderImage_1.default);
     app.use("/api/products", product_1.default);
+    app.use("/api/product-management", productManagement_1.default);
     app.use("/api/product-variants", variant_1.default);
     app.use("/api/product-colors", color_1.default);
     app.use("/api/product-combines", combine_1.default);
@@ -37,7 +45,8 @@ function routeHandler(app) {
     app.use("/api/product-attributes", productAttribute_1.default);
     app.use("/api/default-variant-combines", defaultVariantCombine_1.default);
     app.use("/api/default-product-variants", defaultProductVariant_1.default);
-    // app.use("/comments", commentRouter);
+    app.use("/api/product-ratings", rating_1.default);
+    app.use("/api/product-rating-management", ratingManagement_1.default);
     // app.use("/reviews", reviewRouter);
     // app.use("/orders", orderRouter);
     // app.use("/order-management", manageOrderRouter);

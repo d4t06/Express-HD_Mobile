@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
 const colorSchema = joi_1.default.object({
     id: joi_1.default.number(),
-    product_ascii: joi_1.default.string().required(),
+    product_id: joi_1.default.number().required(),
     color_id: joi_1.default.number().required(),
     variant_id: joi_1.default.number().required(),
     price: joi_1.default.number().required(),

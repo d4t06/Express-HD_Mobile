@@ -18,10 +18,10 @@ Category.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    category: {
+    name: {
         type: sequelize_1.DataTypes.STRING,
     },
-    category_ascii: {
+    name_ascii: {
         type: sequelize_1.DataTypes.STRING,
     },
     attribute_order: {

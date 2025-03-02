@@ -21,15 +21,15 @@ class BrandHandler {
     update(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { productAscii } = req.params;
+                const { productId } = req.params;
                 const body = req.body;
                 const value = description_2.default.validate(body);
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
-                const oldDesc = yield description_1.default.findOne({ where: { product_ascii: productAscii } });
+                const oldDesc = yield description_1.default.findOne({ where: { product_id: productId } });
                 if (!oldDesc)
                     throw new ObjectNotFound_1.default("");
-                yield description_1.default.update(body, { where: { product_ascii: productAscii } });
+                yield description_1.default.update(body, { where: { product_id: productId } });
                 return (0, myResponse_1.default)(res, true, "update description successful", 200);
             }
             catch (error) {

@@ -30,6 +30,7 @@ const variant_1 = __importDefault(require("../models/variant"));
 const combine_1 = __importDefault(require("../models/combine"));
 const sliderImage_1 = __importDefault(require("../models/sliderImage"));
 const image_1 = __importDefault(require("../models/image"));
+const helper_1 = require("../system/helper");
 class colorHandler {
     add(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -39,19 +40,19 @@ class colorHandler {
                 const value = color_1.default.validate(body);
                 if (value.error)
                     throw new BadRequest_1.default(value.error.message);
-                const color = yield color_2.default.create(body);
+                const color = yield color_2.default.create(Object.assign(Object.assign({}, body), { name_ascii: (0, helper_1.generateId)(body.name) }));
                 // add slider
                 const newSlider = yield new slider_1.default({
-                    name: `for ${color.product_ascii} ${color.color_ascii}`,
+                    name: `for ${color.product_id} ${color.name_ascii}`,
                 }).save();
                 yield new productSlider_1.default({
                     color_id: color.id,
-                    product_ascii: color.product_ascii,
+                    product_id: color.product_id,
                     slider_id: newSlider.id,
                 }).save();
                 const variants = yield variant_1.default.findAll({
                     where: {
-                        product_ascii: color.product_ascii,
+                        product_id: color.product_id,
                     },
                 });
                 const newCombines = [];
@@ -64,7 +65,7 @@ class colorHandler {
                             color_id: color.id,
                             price: 0,
                             quantity: 0,
-                            product_ascii: color.product_ascii,
+                            product_id: color.product_id,
                             variant_id: v.id,
                         }).save();
                         newCombines.push(combine);

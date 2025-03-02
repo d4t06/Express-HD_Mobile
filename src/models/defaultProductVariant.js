@@ -13,10 +13,10 @@ DefaultProductVariant.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    product_ascii: {
+    product_id: {
         allowNull: false,
         unique: true,
-        type: sequelize_1.DataTypes.STRING,
+        type: sequelize_1.DataTypes.NUMBER,
     },
     variant_id: {
         defaultValue: null,

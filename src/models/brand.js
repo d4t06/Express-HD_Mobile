@@ -13,10 +13,10 @@ Brand.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    brand: {
+    name: {
         type: sequelize_1.DataTypes.STRING,
     },
-    brand_ascii: {
+    name_ascii: {
         type: sequelize_1.DataTypes.STRING,
     },
     image_url: {

@@ -16,15 +16,15 @@ Variant.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    product_ascii: {
+    product_id: {
+        allowNull: false,
+        type: sequelize_1.DataTypes.NUMBER,
+    },
+    name: {
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },
-    variant: {
-        allowNull: false,
-        type: sequelize_1.DataTypes.STRING,
-    },
-    variant_ascii: {
+    name_ascii: {
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },

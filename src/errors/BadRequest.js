@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class BadRequest extends Error {
     constructor(message) {
-        super(message || "bad request");
+        super(message || "Bad request");
     }
 }
 exports.default = BadRequest;

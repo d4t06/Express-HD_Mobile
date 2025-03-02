@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
 const variantSchema = joi_1.default.object({
     id: joi_1.default.number(),
-    product_ascii: joi_1.default.string().required(),
-    variant: joi_1.default.string().required(),
-    variant_ascii: joi_1.default.string().required(),
+    product_id: joi_1.default.number().required(),
+    name: joi_1.default.string().required(),
+    name_ascii: joi_1.default.string().empty(""),
 });
 exports.default = variantSchema;

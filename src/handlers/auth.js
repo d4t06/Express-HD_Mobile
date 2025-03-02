@@ -16,9 +16,11 @@ const user_1 = __importDefault(require("../schemas/user"));
 const BadRequest_1 = __importDefault(require("../errors/BadRequest"));
 const user_2 = __importDefault(require("../models/user"));
 const myResponse_1 = __importDefault(require("../system/myResponse"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
+// import bcrypt from "bcrypt";
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
+const ACCESS_TOKEN_EXPIRE = '1h';
+const REFRESH_TOKEN_EXPIRE = '5d';
 class AuthHandler {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,20 +36,21 @@ class AuthHandler {
                 });
                 if (!user)
                     return (0, myResponse_1.default)(res, false, "username or password is not correct", 401);
-                const isCorrectPassword = yield bcrypt_1.default.compare(body.password, user.password);
+                // const isCorrectPassword = await bcrypt.compare(body.password, user.password);
+                const isCorrectPassword = (body.password === user.password);
                 if (!isCorrectPassword)
                     return (0, myResponse_1.default)(res, false, "username or password is not correct", 401);
                 const token = jsonwebtoken_1.default.sign({
                     username: user.username,
                     role: user.role,
                 }, process.env.JWT_SECRET, {
-                    expiresIn: "1d",
+                    expiresIn: ACCESS_TOKEN_EXPIRE,
                 });
                 const refreshToken = jsonwebtoken_1.default.sign({
                     username: user.username,
                     role: user.role,
                 }, process.env.JWT_SECRET, {
-                    expiresIn: "3d",
+                    expiresIn: REFRESH_TOKEN_EXPIRE,
                 });
                 res.cookie("jwt", refreshToken, {
                     httpOnly: true,
@@ -83,11 +86,11 @@ class AuthHandler {
                 });
                 if (user)
                     return (0, myResponse_1.default)(res, false, "username already exist", 409);
-                const salt = yield bcrypt_1.default.genSalt(10);
-                const hashPassword = yield bcrypt_1.default.hash(body.password, salt);
+                // const salt = await bcrypt.genSalt(10);
+                // const hashPassword = await bcrypt.hash(body.password, salt);
                 yield user_2.default.create({
                     username: body.username,
-                    password: hashPassword,
+                    password: body.password,
                     role: "USER",
                 });
                 return (0, myResponse_1.default)(res, true, "register ok", 200);
@@ -98,7 +101,13 @@ class AuthHandler {
         });
     }
     logout(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () { });
+        return __awaiter(this, void 0, void 0, function* () {
+            const cookies = req.cookies;
+            if (!cookies.jwt)
+                throw new BadRequest_1.default("cookie not provided");
+            res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+            return res.sendStatus(204);
+        });
     }
     refreshToken(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -117,7 +126,7 @@ class AuthHandler {
                     username: decode.username,
                     role: decode.role,
                 }, "nguyenhuudat", {
-                    expiresIn: "1d",
+                    expiresIn: ACCESS_TOKEN_EXPIRE,
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {
