@@ -21,9 +21,12 @@ import cartRouter from "./cartItem";
 import productManagementRouter from "./productManagement";
 import ratingRouter from "./rating";
 import ratingManagementRouter from "./ratingManagement";
+import pdfRouter from "./pdf";
 
 export default function routeHandler(app: Express) {
    app.use("/api/init", initRouter);
+
+   app.use("/api/pdf", pdfRouter);
 
    app.use("/api/auth", authRouter);
 

@@ -105,35 +105,37 @@ class ProductManagementService {
 
       console.log((Date.now() - start) / 1000 + "s", ">>> Save slider: ");
 
+      const sliderSchemas = newColors.map((c) => ({
+         name: newProduct.name_ascii + "_" + c.name_ascii,
+      }));
+
+      const newSliders = await Slider.bulkCreate(sliderSchemas);
+
+      console.log((Date.now() - start) / 1000 + "s", ">>> Product slider, ...: ");   
+
+      const productSliderSchemas = [];
+
       for (let index = 0; index < newColors.length; index++) {
-         const newColor = newColors[index];
+         const color = newColors[index];
+         const slider = newSliders[index];
 
-         const newSlider = await Slider.create({
-            name: newProduct.id + newColor.name_ascii,
-         });
-
-         await ProductSlider.create({
-            color_id: newColor.id,
+         productSliderSchemas.push({
+            color_id: color.id,
             product_id: newProduct.id,
-            slider_id: newSlider.id,
+            slider_id: slider.id,
          });
-
-         if (index === 0) {
-            const sliderImageSchemas = [];
-
-            for (const image of restImages) {
-               const schema = {
-                  image_id: image.id,
-                  link_to: "",
-                  slider_id: newSlider.id,
-               };
-
-               sliderImageSchemas.push(schema);
-            }
-
-            await SliderImage.bulkCreate(sliderImageSchemas);
-         }
       }
+
+      const productSliderProcess = ProductSlider.bulkCreate(productSliderSchemas);
+
+      /** slider images */
+      const sliderImageSchemas = restImages.map((i) => ({
+         image_id: i.id,
+         link_to: "",
+         slider_id: newSliders[0].id,
+      }));
+
+      const sliderImageProcess = SliderImage.bulkCreate(sliderImageSchemas);
 
       /** attributes */
       const attributeSchemas = jsonProduct.attributes.map((a) => ({
@@ -141,7 +143,18 @@ class ProductManagementService {
          product_id: newProduct.id,
          value: a.value,
       }));
-      await ProductAttribute.bulkCreate(attributeSchemas);
+      const attributeProcess = ProductAttribute.bulkCreate(attributeSchemas);
+
+      /** default variant */
+      const defaultVariantProcess = DefaultProductVariant.create({
+         product_id: newProduct.id,
+         variant_id: newVariants[0].id,
+      });
+
+      await Promise.all([productSliderProcess, sliderImageProcess, attributeProcess, defaultVariantProcess])
+
+      console.log((Date.now() - start) / 1000 + "s", ">>> Combine,...: ");   
+
 
       /** combines */
       const combineSchemas = [];
@@ -158,13 +171,8 @@ class ProductManagementService {
             combineSchemas.push(newCombineSchema);
          }
       }
-      const newCombines = await Combine.bulkCreate(combineSchemas);
 
-      /** default variant */
-      await DefaultProductVariant.create({
-         product_id: newProduct.id,
-         variant_id: newVariants[0].id,
-      });
+      const newCombines = await Combine.bulkCreate(combineSchemas);
 
       /** default combine */
       await DefaultVariantCombine.create({
