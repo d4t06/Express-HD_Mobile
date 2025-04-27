@@ -1,10 +1,16 @@
-import { Sequelize } from "sequelize";
+import { Options, Sequelize } from "sequelize";
 
-const env = process.env.NODE_ENV || "development";
-const config = require("./config")[env];
+import config from "./config";
+const env: keyof typeof config =
+  (process.env.NODE_ENV as keyof typeof config) || "development";
 
-const sequelize = config.url
-   ? new Sequelize(config.url, config)
-   : new Sequelize(config.database, config.username, config.password, config);
+const configByEnv = config[env];
+
+const sequelize = new Sequelize(
+  configByEnv.database,
+  configByEnv.username,
+  configByEnv.password,
+  configByEnv as Options,
+);
 
 export default sequelize;

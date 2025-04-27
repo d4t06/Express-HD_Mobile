@@ -23,11 +23,18 @@ routeHandler(app);
 
 app.use(errorHandler);
 
-app.listen(port, () => {
+app.listen(3000, "192.168.2.17", () => {
    console.log(
       `[server]: Server is running at http://localhost:${port}, ${process.env.NODE_ENV}`
    );
    console.log(process.env.CORS_WHITE_LIST?.split(", "));
 });
+
+// app.listen(port, () => {
+//    console.log(
+//       `[server]: Server is running at http://localhost:${port}, ${process.env.NODE_ENV}`
+//    );
+//    console.log(process.env.CORS_WHITE_LIST?.split(", "));
+// });
 
 connectDB();

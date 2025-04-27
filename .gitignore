@@ -11,3 +11,5 @@ src/config/firebaseConfig.ts
 
 # Editor directories and files
 .vscode/*
+
+Dockerfile
