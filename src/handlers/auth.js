@@ -56,7 +56,7 @@ class AuthHandler {
                     httpOnly: true,
                     maxAge: 30 * 24 * 60 * 60 * 1000,
                     secure: process.env.NODE_ENV === "production",
-                    sameSite: "strict",
+                    sameSite: "none",
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {
