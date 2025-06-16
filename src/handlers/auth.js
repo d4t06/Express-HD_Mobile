@@ -20,7 +20,7 @@ const myResponse_1 = __importDefault(require("../system/myResponse"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
 const ACCESS_TOKEN_EXPIRE = "1h";
-const REFRESH_TOKEN_EXPIRE = "5d";
+const REFRESH_TOKEN_EXPIRE = "30d";
 class AuthHandler {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -52,11 +52,11 @@ class AuthHandler {
                 }, process.env.JWT_SECRET, {
                     expiresIn: REFRESH_TOKEN_EXPIRE,
                 });
-                res.cookie("jwt", refreshToken, {
+                res.cookie("refresh_token", refreshToken, {
                     httpOnly: true,
-                    maxAge: 24 * 60 * 60 * 1000,
-                    sameSite: "lax",
-                    secure: true,
+                    maxAge: 30 * 24 * 60 * 60 * 1000,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "strict",
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {
@@ -105,7 +105,7 @@ class AuthHandler {
             const cookies = req.cookies;
             if (!cookies.jwt)
                 throw new BadRequest_1.default("cookie not provided");
-            res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+            res.clearCookie("jwt");
             return res.sendStatus(204);
         });
     }
@@ -113,10 +113,10 @@ class AuthHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const cookies = req.cookies;
-                if (!cookies.jwt)
+                const refreshToken = cookies["refresh_token"];
+                if (!refreshToken)
                     throw new BadRequest_1.default("cookie not provided");
-                const decode = jsonwebtoken_1.default.verify(cookies.jwt, process.env.JWT_SECRET);
-                console.log("refresh check ", decode.role);
+                const decode = jsonwebtoken_1.default.verify(refreshToken, process.env.JWT_SECRET);
                 const user = yield user_2.default.findOne({
                     where: { username: decode.username },
                 });
@@ -128,7 +128,7 @@ class AuthHandler {
                 }, "nguyenhuudat", {
                     expiresIn: ACCESS_TOKEN_EXPIRE,
                 });
-                return (0, myResponse_1.default)(res, true, "login successful", 200, {
+                return (0, myResponse_1.default)(res, true, "RefreshToken ok", 200, {
                     userInfo: {
                         username: decode.username,
                         role: decode.role,

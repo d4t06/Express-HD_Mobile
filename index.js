@@ -21,15 +21,9 @@ app.use(cors({
 }));
 (0, routes_1.default)(app);
 app.use(globalErrorHandler_1.default);
-app.listen(port, () => {
+app.listen(port, '192.168.2.19', () => {
     var _a;
     console.log(`[server]: Server is running at http://localhost:${port}`);
     console.log((_a = process.env.CORS_WHITE_LIST) === null || _a === void 0 ? void 0 : _a.split(", "));
 });
-// app.listen(port, () => {
-//    console.log(
-//       `[server]: Server is running at http://localhost:${port}, ${process.env.NODE_ENV}`
-//    );
-//    console.log(process.env.CORS_WHITE_LIST?.split(", "));
-// });
 (0, conectDB_1.default)();
