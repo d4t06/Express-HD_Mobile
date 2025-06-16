@@ -19,8 +19,8 @@ const myResponse_1 = __importDefault(require("../system/myResponse"));
 // import bcrypt from "bcrypt";
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const ObjectNotFound_1 = __importDefault(require("../errors/ObjectNotFound"));
-const ACCESS_TOKEN_EXPIRE = '1h';
-const REFRESH_TOKEN_EXPIRE = '5d';
+const ACCESS_TOKEN_EXPIRE = "1h";
+const REFRESH_TOKEN_EXPIRE = "5d";
 class AuthHandler {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -37,7 +37,7 @@ class AuthHandler {
                 if (!user)
                     return (0, myResponse_1.default)(res, false, "username or password is not correct", 401);
                 // const isCorrectPassword = await bcrypt.compare(body.password, user.password);
-                const isCorrectPassword = (body.password === user.password);
+                const isCorrectPassword = body.password === user.password;
                 if (!isCorrectPassword)
                     return (0, myResponse_1.default)(res, false, "username or password is not correct", 401);
                 const token = jsonwebtoken_1.default.sign({
@@ -55,7 +55,7 @@ class AuthHandler {
                 res.cookie("jwt", refreshToken, {
                     httpOnly: true,
                     maxAge: 24 * 60 * 60 * 1000,
-                    sameSite: "none",
+                    sameSite: "lax",
                     secure: true,
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
