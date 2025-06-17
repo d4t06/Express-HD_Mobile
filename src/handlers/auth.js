@@ -56,6 +56,7 @@ class AuthHandler {
                     httpOnly: true,
                     maxAge: 30 * 24 * 60 * 60 * 1000,
                     partitioned: true,
+                    sameSite: "strict",
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {
@@ -104,7 +105,7 @@ class AuthHandler {
             const cookies = req.cookies;
             if (!cookies.jwt)
                 throw new BadRequest_1.default("cookie not provided");
-            res.clearCookie("jwt");
+            res.clearCookie("refresh_token");
             return res.sendStatus(204);
         });
     }
