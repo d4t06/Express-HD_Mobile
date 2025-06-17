@@ -55,6 +55,7 @@ class AuthHandler {
                 res.cookie("refresh_token", refreshToken, {
                     httpOnly: true,
                     maxAge: 30 * 24 * 60 * 60 * 1000,
+                    partitioned: true,
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {
