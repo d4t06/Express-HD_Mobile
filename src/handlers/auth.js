@@ -56,7 +56,6 @@ class AuthHandler {
                     httpOnly: true,
                     maxAge: 30 * 24 * 60 * 60 * 1000,
                     partitioned: true,
-                    sameSite: "strict",
                 });
                 return (0, myResponse_1.default)(res, true, "login successful", 200, {
                     userInfo: {
