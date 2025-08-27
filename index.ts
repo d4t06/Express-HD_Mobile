@@ -1,40 +1,40 @@
-require("dotenv").config({ path: `.env.local`, override: true });
+// must place at top
+import "./configEnv";
 
 import express from "express";
 import errorHandler from "./src/middlewares/globalErrorHandler";
 import routeHandler from "./src/routes";
 import connectDB from "./conectDB";
-const cookiesParser = require("cookie-parser");
-const cors = require("cors");
+import cookiesParser from "cookie-parser";
+import cors from "cors";
+
+const port = process.env.PORT || 4000;
+const whiteList = (process.env.WHITE_LIST || "").split(", ");
 
 const app = express();
-const port = 3000 || 3000;
 
+// for request body
 app.use(express.json());
+// for request cookie
 app.use(cookiesParser());
+// enable cors
 app.use(
-   cors({
-      credentials: true,
-      origin: process.env.CORS_WHITE_LIST?.split(", "),
-   })
+  cors({
+    credentials: true,
+    origin: whiteList,
+  }),
 );
 
+// index route
 routeHandler(app);
 
+// global error middleware, must place after routes for catch error
 app.use(errorHandler);
 
-app.listen(3000, "192.168.2.17", () => {
-   console.log(
-      `[server]: Server is running at http://localhost:${port}, ${process.env.NODE_ENV}`
-   );
-   console.log(process.env.CORS_WHITE_LIST?.split(", "));
+app.listen(port, () => {
+  console.log(`[server]: Server is running at port: ${port}`);
+  console.log("white list: ", whiteList);
 });
 
-// app.listen(port, () => {
-//    console.log(
-//       `[server]: Server is running at http://localhost:${port}, ${process.env.NODE_ENV}`
-//    );
-//    console.log(process.env.CORS_WHITE_LIST?.split(", "));
-// });
-
+// connect to database
 connectDB();
